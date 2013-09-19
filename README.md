@@ -37,6 +37,8 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Wednesday, 18 September 2013 – Fix for non-english date format
+Tuesday, 17 September 2013 – Updated q_workflow module to latest version
 Thursday, 18 April 2013 – Fixed recognition of 10/11/12am/pm times
 Tuesday, 16 April 2013 – Added support for WebKit nightly builds
 Monday, 15 April 2013 – Added "r in x days y hours", "r in x hours y minutes", "r today/tomorrow/weekday at time to x" patterns

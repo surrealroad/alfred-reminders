@@ -214,7 +214,7 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 
-property currentVersion : 32
+property currentVersion : 33
 property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
@@ -472,6 +472,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Wednesday, 18 September 2013 – Fix for non-gregorian date format
 Tuesday, 17 September 2013 – Updated q_workflow module to latest version
 Thursday, 18 April 2013 – Fixed recognition of 10/11/12am/pm times
 Tuesday, 16 April 2013 – Added support for WebKit nightly builds
