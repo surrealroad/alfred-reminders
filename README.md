@@ -37,7 +37,8 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
-Wednesday, 18 September 2013 – Fix for non-english date format
+Friday, 4 October 2013 – Compatbility with OS 10.9 Mavericks GM
+Wednesday, 18 September 2013 – Fix for non-gregorian date format
 Tuesday, 17 September 2013 – Updated q_workflow module to latest version
 Thursday, 18 April 2013 – Fixed recognition of 10/11/12am/pm times
 Tuesday, 16 April 2013 – Added support for WebKit nightly builds
@@ -61,3 +62,4 @@ Sunday, 17 March 2013 – You can now specify a date for the reminder. See the e
 
 Uses AppleScript implementation of the Workflow object class for Alfred 2 (https://github.com/qlassiqa/qWorkflow)
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
+Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/library/plist/)
