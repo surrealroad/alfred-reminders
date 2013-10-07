@@ -37,6 +37,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Monday, 7 October 2013 – Added profiling to rtest; "r" with no arguments is now the same as "r all"
 Friday, 4 October 2013 – Compatbility with OS 10.9 Mavericks GM
 Wednesday, 18 September 2013 – Fix for non-gregorian date format
 Tuesday, 17 September 2013 – Updated q_workflow module to latest version
