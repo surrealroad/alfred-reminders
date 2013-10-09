@@ -2,6 +2,8 @@ alfred-reminders
 ================
 
 This creates a new reminder in reminders.app
+
+More information at http://www.alfredforum.com/topic/917-reminders/
  
 To use, just type "r reminder_text" into Alfred. E.g. "r check out some of Alfred's other workflows" to find an existing reminder with the search text, or to create a new one.
 Actioning an existing reminder marks it as complete.
@@ -37,6 +39,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Wednesday, 9 October 2013 – Added support for Google Chrome Canary; added plain text formats of applescripts
 Monday, 7 October 2013 – Added profiling to rtest; "r" with no arguments is now the same as "r all"
 Friday, 4 October 2013 – Compatbility with OS 10.9 Mavericks GM
 Wednesday, 18 September 2013 – Fix for non-gregorian date format
