@@ -214,7 +214,7 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 
-property currentVersion : 39
+property currentVersion : 40
 property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
@@ -559,7 +559,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
-Wednesday, 9 October 2013 – Added support for Google Chrome Canary; added plain text formats of applescripts
+Wednesday, 9 October 2013 – Added support for Google Chrome Canary; added plain text formats of applescripts; fix for cache process failing for new users
 Monday, 7 October 2013 – Added profiling to rtest, "r" with no arguments is now the same as "r all"
 Friday, 4 October 2013 – Compatibility with OS 10.9 Mavericks GM
 Wednesday, 18 September 2013 – Fix for non-gregorian date format
