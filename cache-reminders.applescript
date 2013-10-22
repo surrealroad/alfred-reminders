@@ -11,9 +11,18 @@ on run
 	set wf to wf's new_workflow_with_bundle(bundleid) --create folders and set up paths
 	set cachePath to wf's _data & cacheFile
 	
-	if not lib's FileExists(cachePath) then
-		_plist's newPlist(cachePath)
+	if lib's FileExists(cachePath) then
+		try
+			set cacheInProgress to _plist's readKey(cachePath, "cacheInProgress")
+			-- prevent multiple cache processes overlapping
+			if cacheInProgress then
+				return "Cache already in progress"
+			end if
+		end try
 	end if
+	
+	--create a new file
+	_plist's newPlist(cachePath)
 	
 	--check keys exist
 	try
@@ -26,19 +35,21 @@ on run
 	on error
 		_plist's addKey(cachePath, "timestamp", (current date))
 	end try
-	try
+	(*try
 		_plist's readKey(cachePath, "existingReminders")
 	on error
-		_plist's addKey(cachePath, "existingReminders", "")
-	end try
+		_plist's addKey(cachePath, "existingReminders", {})
+	end try*)
 	try
-		_plist's readKey(cachePath, "cacheInProgress")
+		_plist's readKey(cachePath, "reminderCount")
 	on error
-		_plist's addKey(cachePath, "cacheInProgress", 0)
+		_plist's addKey(cachePath, "reminderCount", 0)
 	end try
 	
+	set existingReminders to {}
+	set didTimeout to false
+	
 	tell application id "com.apple.reminders"
-		set existingReminders to {}
 		
 		set reminderList to reminders whose (completed is false)
 		
@@ -54,7 +65,11 @@ on run
 			set reminderRecord to reminderRecord & {parentlist:(reminder_item's container's name)}
 			
 			set end of existingReminders to reminderRecord
-			if (current date) - inTime is greater than 100 then exit repeat
+			
+			if ((current date) - inTime) is greater than 100 then
+				set didTimeout to true
+				exit repeat
+			end if
 			delay 0.01 -- this delay is important to prevent random "Connection is Invalid -609" AppleScript errors
 		end repeat
 		try
@@ -62,15 +77,41 @@ on run
 		on error
 			set closeReminders to missing value
 		end try
-		if closeReminders is not missing value and closeReminders Â¬
+		if closeReminders is not missing value and closeReminders Â
 			and bundle identifier of (info for (path to frontmost application)) is not "com.apple.reminders" then
 			quit
 		end if
 		
 	end tell
-	_plist's setKey(cachePath, "timestamp", (current date))
-	_plist's setKey(cachePath, "existingReminders", existingReminders)
-	_plist's setKey(cachePath, "cacheInProgress", 0)
 	
+	try
+		_plist's setKey(cachePath, "timestamp", (current date))
+		_plist's setKey(cachePath, "reminderCount", count of existingReminders)
+		my plistDictFromArray(cachePath, "reminder", existingReminders)
+		_plist's setKey(cachePath, "cacheInProgress", 0)
+	on error errMsg
+		return errMsg
+	end try
+	
+	if didTimeout then return "timed out"
 	return
 end run
+
+--convert a list to a dict
+on plistDictFromArray(posixPath, prefix, theList)
+	try
+		tell application "System Events"
+			tell property list file posixPath
+				tell contents
+					set i to 1
+					repeat with theItem in theList
+						make new property list item at end with properties {kind:record, name:prefix & i, value:theItem}
+						set i to i + 1
+					end repeat
+				end tell
+			end tell
+		end tell
+	on error eMsg number eNum
+		error "Can't setPlistArray: " & eMsg number eNum
+	end try
+end plistDictFromArray

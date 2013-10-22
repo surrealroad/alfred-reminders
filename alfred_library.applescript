@@ -11,34 +11,34 @@ property overdueString : "overdue"
 property allString : "all"
 property refreshString : "refresh"
 
-property reminderHelpItems : {"do something crazy", Â¬
-	"today release the hamsters into the wild", Â¬
-	"tomorrow bring about financial ruin upon my enemies", Â¬
-	"in 5 minutes drop everything", Â¬
-	"in 2 hours laugh out loud in random thoughts list", Â¬
-	"in 3 days 1 hour pick stuff up off the floor", Â¬
-	"on 24/12/13 to forget everything I know about things in movies", Â¬
-	"on 12 June 15 to come up with some interesting ideas", Â¬
-	"on 11 12 13 to check what the weather's like", Â¬
-	"on 31-12-99 23:22 to panic about the millennium bug", Â¬
-	"at 2pm to wait for nothing in particular", Â¬
+property reminderHelpItems : {"do something crazy", Â
+	"today release the hamsters into the wild", Â
+	"tomorrow bring about financial ruin upon my enemies", Â
+	"in 5 minutes drop everything", Â
+	"in 2 hours laugh out loud in random thoughts list", Â
+	"in 3 days 1 hour pick stuff up off the floor", Â
+	"on 24/12/13 to forget everything I know about things in movies", Â
+	"on 12 June 15 to come up with some interesting ideas", Â
+	"on 11 12 13 to check what the weather's like", Â
+	"on 31-12-99 23:22 to panic about the millennium bug", Â
+	"at 2pm to wait for nothing in particular", Â
 	"thursday at 15.30 to ask some difficult questions"}
 
-property supportedReminderApplications : {Â¬
-	{appname:"Safari.app", icon:"Safari.png"}, Â¬
-	{appname:"WebKit.app", icon:"Safari.png"}, Â¬
-	{appname:"Google Chrome.app", icon:"Chrome.png"}, Â¬
-	{appname:"Mail.app", icon:"Mail.png"}, Â¬
-	{appname:"Contacts.app", icon:"Address Book.png"}, Â¬
-	{appname:"Address Book.app", icon:"Address Book.png"}, Â¬
-	{appname:"Finder.app", icon:"Finder.png"}, Â¬
-	{appname:"Chromium.app", icon:"Chromium.png"}, Â¬
-	{appname:"TextEdit.app", icon:"TextEdit.png"}, Â¬
-	{appname:"Textmate.app", icon:"TextMate.png"}, Â¬
-	{appname:"Vienna.app", icon:"RSS.png"}, Â¬
-	{appname:"OmniFocus.app", icon:"OmniFocus.png"}, Â¬
-	{appname:"FoldingText.app", icon:"App.png"}, Â¬
-	{appname:"Google Chrome Canary.app", icon:"Chrome Canary.png"} Â¬
+property supportedReminderApplications : {Â
+	{appname:"Safari.app", icon:"Safari.png"}, Â
+	{appname:"WebKit.app", icon:"Safari.png"}, Â
+	{appname:"Google Chrome.app", icon:"Chrome.png"}, Â
+	{appname:"Mail.app", icon:"Mail.png"}, Â
+	{appname:"Contacts.app", icon:"Address Book.png"}, Â
+	{appname:"Address Book.app", icon:"Address Book.png"}, Â
+	{appname:"Finder.app", icon:"Finder.png"}, Â
+	{appname:"Chromium.app", icon:"Chromium.png"}, Â
+	{appname:"TextEdit.app", icon:"TextEdit.png"}, Â
+	{appname:"Textmate.app", icon:"TextMate.png"}, Â
+	{appname:"Vienna.app", icon:"RSS.png"}, Â
+	{appname:"OmniFocus.app", icon:"OmniFocus.png"}, Â
+	{appname:"FoldingText.app", icon:"App.png"}, Â
+	{appname:"Google Chrome Canary.app", icon:"Chrome Canary.png"} Â
 		}
 
 
@@ -69,11 +69,20 @@ on setRemindersActive()
 	end if
 end setRemindersActive
 
+on getCachedReminderList(wf, cacheFile)
+	set existingReminders to {}
+	set reminderCount to wf's get_value("reminderCount", cacheFile)
+	repeat with i from 1 to reminderCount
+		set end of existingReminders to wf's get_value("reminder" & i, cacheFile)
+	end repeat
+	return existingReminders
+end getCachedReminderList
+
 on fetchReminderList(wf, cacheFile, cacheExpires)
 	try
 		set timestamp to wf's get_value("timestamp", cacheFile)
 		if (current date) - timestamp is less than cacheExpires then
-			return wf's get_value("existingReminders", cacheFile)
+			return getCachedReminderList(wf, cacheFile)
 		end if
 	end try
 	return cacheReminders(wf, cacheFile)
@@ -82,7 +91,7 @@ end fetchReminderList
 on cacheReminders(wf, cacheFile)
 	set cacheTimeout to 30
 	set cacheInProgress to wf's get_value("cacheInProgress", cacheFile)
-	set existingReminders to wf's get_value("existingReminders", cacheFile)
+	set existingReminders to getCachedReminderList(wf, cacheFile)
 	
 	if cacheInProgress is not missing value then
 		-- return previous cache results, even if they are out of date
@@ -113,9 +122,9 @@ on filterReminders(reminderList, theText, theDate, theList)
 			set matchedDate to false
 			set matchedList to false
 			
-			if theText is missing value or theText is "" or theText is Â¬
-				allString or theText is overdueString Â¬
-				or theText is refreshString Â¬
+			if theText is missing value or theText is "" or theText is Â
+				allString or theText is overdueString Â
+				or theText is refreshString Â
 				or reminder_item's title contains theText then
 				set matchedText to true
 			end if
@@ -159,7 +168,7 @@ on filterReminders(reminderList, theText, theDate, theList)
 				else
 					set infoText to (" (started on " & (reminder_item's creationdate) as string) & ")"
 				end if
-				set end of theResult to my alfred_result_item_with_icon(reminder_item's uid, reminder_item's title, Â¬
+				set end of theResult to my alfred_result_item_with_icon(reminder_item's uid, reminder_item's title, Â
 					"Set as complete" & infoText, "uid:" & reminder_item's uid, "yes", "checked.png")
 			end if
 		end repeat
@@ -229,12 +238,12 @@ on parseReminder(q)
 		end try
 		
 		try
-			if theDate is "" and first word of q is "in" and Â¬
+			if theDate is "" and first word of q is "in" and Â
 				(third word of q is "minutes" or third word of q is "minute") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + minutes * (my middleText(q, 2, 2)))
 				set valid to "yes"
-			else if theDate is "" and first word of q is "in" and Â¬
+			else if theDate is "" and first word of q is "in" and Â
 				(third word of q is "days" or third word of q is "day") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + days * (my middleText(q, 2, 2)))
@@ -246,7 +255,7 @@ on parseReminder(q)
 					end if
 				end try
 				set valid to "yes"
-			else if theDate is "" and first word of q is "in" and Â¬
+			else if theDate is "" and first word of q is "in" and Â
 				(third word of q is "hours" or third word of q is "hour") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + hours * (my middleText(q, 2, 2)))
@@ -353,20 +362,20 @@ on formatReminderSubtitle(theText, theDate, theList, theApplication)
 end formatReminderSubtitle
 
 on reminderHelp()
-	set theResult to {Â¬
-		alfred_result_item_with_icon("reminder-help-1", "r all", "Show all outstanding reminders", "all", "no", "checked.png"), Â¬
-		alfred_result_item_with_icon("reminder-help-2", "r refresh", "Refresh outstanding reminders", "refresh", "no", "checked.png"), Â¬
-		alfred_result_item_with_icon("reminder-help-3", "r overdue", "Show overdue reminders", "overdue", "no", "checked.png"), Â¬
-		alfred_result_item_with_icon("reminder-help-4", "r this", formatReminderSubtitle("", "", "", my frontmostapp()), "this", "no", "App.png") Â¬
+	set theResult to {Â
+		alfred_result_item_with_icon("reminder-help-1", "r all", "Show all outstanding reminders", "all", "no", "checked.png"), Â
+		alfred_result_item_with_icon("reminder-help-2", "r refresh", "Refresh outstanding reminders", "refresh", "no", "checked.png"), Â
+		alfred_result_item_with_icon("reminder-help-3", "r overdue", "Show overdue reminders", "overdue", "no", "checked.png"), Â
+		alfred_result_item_with_icon("reminder-help-4", "r this", formatReminderSubtitle("", "", "", my frontmostapp()), "this", "no", "App.png") Â
 			}
 	set i to 5
 	repeat with helpItem in reminderHelpItems
 		set parsedReminder to my parseReminder(helpItem)
-		set end of theResult to my alfred_result_item_with_icon("reminder-help-" & i, Â¬
-			"r " & helpItem, Â¬
-			formatReminderSubtitle(theText of parsedReminder, theDate of parsedReminder, theList of parsedReminder, theApplication of parsedReminder), Â¬
-			helpItem, Â¬
-			"no", Â¬
+		set end of theResult to my alfred_result_item_with_icon("reminder-help-" & i, Â
+			"r " & helpItem, Â
+			formatReminderSubtitle(theText of parsedReminder, theDate of parsedReminder, theList of parsedReminder, theApplication of parsedReminder), Â
+			helpItem, Â
+			"no", Â
 			"unchecked.png")
 		set i to i + 1
 	end repeat
@@ -512,7 +521,7 @@ end noteFromClipboard
 
 on clipboardAsHTML(wf)
 	try
-		set thex to (the clipboard as Â«class HTMLÂ»)
+		set thex to (the clipboard as Çclass HTMLÈ)
 		-- This will trigger an error if you've copied something other than HTML data
 		set f to wf's get_cache() & "temp.html"
 		-- Writes to a file named "temp.html" in cache
@@ -521,7 +530,7 @@ on clipboardAsHTML(wf)
 		write thex to newFile
 		close access newFile
 		set newFile to open for access POSIX file f
-		set theHTML to read newFile as Â«class utf8Â»
+		set theHTML to read newFile as Çclass utf8È
 		close access newFile
 		return theHTML
 	on error
@@ -583,7 +592,7 @@ on formatMediaInfo(metadata)
 			else if item 1 of this_data is "Stream size" then
 				set metadataProperties to metadataProperties & {streamsize:{label:(item 1 of this_data), value:(item 2 of this_data), uid:"metadata-streamsize"}}
 			else if item 1 of this_data is "Language" then
-				set metadataProperties to metadataProperties & {language:{label:(item 1 of this_data), value:(item 2 of this_data), uid:"metadata-language"}}
+				set metadataProperties to metadataProperties & {|language|:{label:(item 1 of this_data), value:(item 2 of this_data), uid:"metadata-language"}}
 			end if
 		end if
 	end repeat
@@ -773,8 +782,8 @@ on convertTime(theTimeStr)
 		end if
 		
 		-- determine am or pm based on current time
-		if (not am and not pm) Â¬
-			and num is less than (12 * hours) Â¬
+		if (not am and not pm) Â
+			and num is less than (12 * hours) Â
 			and num is less than ((current date)'s time) then
 			set pm to true
 		end if
@@ -821,7 +830,7 @@ end splitByColon
 --
 on trim(theseCharacters, someText)
 	-- Lazy default (AppleScript doesn't support default values)
-	if theseCharacters is true then set theseCharacters to Â¬
+	if theseCharacters is true then set theseCharacters to Â
 		{" ", tab, ASCII character 10, return, ASCII character 0}
 	
 	if someText is "" then return
@@ -843,48 +852,48 @@ end echo
 
 on format_date(the_date, format_string)
 	-- store all elements of the date into variables
-	set {year_num, month_num, day_num, hour_num, minute_num, second_num} to Â¬
-		{year of the_date, (month of the_date) as integer, day of the_date, hours of the_date, Â¬
+	set {year_num, month_num, day_num, hour_num, minute_num, second_num} to Â
+		{year of the_date, (month of the_date) as integer, day of the_date, hours of the_date, Â
 			minutes of the_date, seconds of the_date}
 	set {month_name, day_name} to {(month of the_date) as string, (weekday of the_date) as string}
 	set suffix_list to {"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"}
 	
-	set placeholders to Â¬
-		{"<<Year>>", Â¬
-			"<<Year 2>>", Â¬
-			"<<Century number>>", Â¬
-			"<<Century>>", Â¬
-			"<<Month>>", Â¬
-			"<<Month 2>>", Â¬
-			"<<Month name>>", Â¬
-			"<<Day>>", Â¬
-			"<<Day 2>>", Â¬
-			"<<Day name>>", Â¬
-			"<<Day suffix>>", Â¬
-			"<<Hour>>", Â¬
-			"<<Hour 2>>", Â¬
-			"<<Minute>>", Â¬
-			"<<Minute 2>>", Â¬
-			"<<Second>>", Â¬
+	set placeholders to Â
+		{"<<Year>>", Â
+			"<<Year 2>>", Â
+			"<<Century number>>", Â
+			"<<Century>>", Â
+			"<<Month>>", Â
+			"<<Month 2>>", Â
+			"<<Month name>>", Â
+			"<<Day>>", Â
+			"<<Day 2>>", Â
+			"<<Day name>>", Â
+			"<<Day suffix>>", Â
+			"<<Hour>>", Â
+			"<<Hour 2>>", Â
+			"<<Minute>>", Â
+			"<<Minute 2>>", Â
+			"<<Second>>", Â
 			"<<Second 2>>"}
 	
-	set value_list to {Â¬
-		year_num as string, Â¬
-		dd(year_num), Â¬
-		(year_num div 100) as string, Â¬
-		(year_num div 100 + 1) as string, Â¬
-		month_num as string, Â¬
-		dd(month_num), Â¬
-		localized string of (month_name), Â¬
-		day_num as string, Â¬
-		dd(day_num), Â¬
-		localized string of (day_name), Â¬
-		item (day_num mod 10 + 1) of suffix_list, Â¬
-		hour_num as string, Â¬
-		dd(hour_num), Â¬
-		minute_num as string, Â¬
-		dd(minute_num), Â¬
-		second_num as string, Â¬
+	set value_list to {Â
+		year_num as string, Â
+		dd(year_num), Â
+		(year_num div 100) as string, Â
+		(year_num div 100 + 1) as string, Â
+		month_num as string, Â
+		dd(month_num), Â
+		localized string of (month_name), Â
+		day_num as string, Â
+		dd(day_num), Â
+		localized string of (day_name), Â
+		item (day_num mod 10 + 1) of suffix_list, Â
+		hour_num as string, Â
+		dd(hour_num), Â
+		minute_num as string, Â
+		dd(minute_num), Â
+		second_num as string, Â
 		dd(second_num)}
 	
 	-- repace elements of format string

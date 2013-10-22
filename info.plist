@@ -214,7 +214,7 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 
-property currentVersion : 40
+property currentVersion : 42
 property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
@@ -423,7 +423,7 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 set testStart to (current date)try	set theResult to theResult &amp; wf's get_value("timestamp", cacheFile)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
 set theResult to theResult &amp; "Fetch cached reminder count: "
-set testStart to (current date)try	set cachedReminderList to wf's get_value("existingReminders", cacheFile)	set theResult to theResult &amp; (count of cachedReminderList)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+set testStart to (current date)try	set cachedReminderList to lib's getCachedReminderList(wf, cacheFile)	set theResult to theResult &amp; (count of cachedReminderList)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test parseReminder suiteset theResult to theResult &amp; "Test basic query: "
 set testStart to (current date)try	set q to "something"	set qResult to lib's parseReminder(q)	if (theText of qResult) is equal to q then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
@@ -559,6 +559,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Tuesday, 22 October 2013 – Prevent cache processes overlapping; recreate damaged cache file if needed; workaround for OS 10.9 GM2 plist bug
 Wednesday, 9 October 2013 – Added support for Google Chrome Canary; added plain text formats of applescripts; fix for cache process failing for new users
 Monday, 7 October 2013 – Added profiling to rtest, "r" with no arguments is now the same as "r all"
 Friday, 4 October 2013 – Compatibility with OS 10.9 Mavericks GM
