@@ -214,7 +214,7 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 
-property currentVersion : 44
+property currentVersion : 45
 property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
@@ -362,7 +362,7 @@ on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, 
 				<key>lastpathcomponent</key>
 				<false/>
 				<key>onlyshowifquerypopulated</key>
-				<true/>
+				<false/>
 				<key>output</key>
 				<integer>0</integer>
 				<key>removeextension</key>
@@ -559,7 +559,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
-Wednesday, 23 October 2013 – Increased timeout on OS 10.9, and allowed reminders to be retrieved from the cache while it's running
+Wednesday, 23 October 2013 – Increased timeout on OS 10.9, and allowed reminders to be retrieved from the cache while it's running; times specified without am/pm are now assumed to be in 24hour format; corrected an issue where 12 o'clock times were calculated incorrectly; you can now use "noon" and "midnight" to specify time
 Tuesday, 22 October 2013 – Prevent cache processes overlapping; recreate damaged cache file if needed; workaround for OS 10.9 GM2 plist bug
 Wednesday, 9 October 2013 – Added support for Google Chrome Canary; added plain text formats of applescripts; fix for cache process failing for new users
 Monday, 7 October 2013 – Added profiling to rtest, "r" with no arguments is now the same as "r all"

@@ -49,7 +49,7 @@ on run
 	set existingReminders to {}
 	set didTimeout to false
 	if (system version of (system info)) is "10.9" then
-		set theTimeout to 1000
+		set theTimeout to 600 --1000
 	else
 		set theTimeout to 100
 	end if
