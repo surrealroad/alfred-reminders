@@ -48,12 +48,18 @@ on run
 	
 	set existingReminders to {}
 	set didTimeout to false
+	if (system version of (system info)) is "10.9" then
+		set theTimeout to 1000
+	else
+		set theTimeout to 100
+	end if
 	
 	tell application id "com.apple.reminders"
 		
 		set reminderList to reminders whose (completed is false)
 		
 		set inTime to current date
+		set i to 1
 		repeat with reminder_item in reminderList
 			set reminderRecord to {uid:reminder_item's id}
 			set reminderRecord to reminderRecord & {title:reminder_item's name}
@@ -64,9 +70,22 @@ on run
 			set reminderRecord to reminderRecord & {importance:reminder_item's priority}
 			set reminderRecord to reminderRecord & {parentlist:(reminder_item's container's name)}
 			
-			set end of existingReminders to reminderRecord
+			--set end of existingReminders to reminderRecord
+			--write out to plist
+			try
+				tell application "System Events"
+					tell property list file cachePath
+						tell contents
+							make new property list item at end with properties {kind:record, name:"reminder" & i, value:reminderRecord}
+						end tell
+					end tell
+				end tell
+			on error eMsg number eNum
+				return "Can't write plist: " & eMsg & " number " & eNum
+			end try
 			
-			if ((current date) - inTime) is greater than 100 then
+			set i to i + 1
+			if ((current date) - inTime) is greater than theTimeout then
 				set didTimeout to true
 				exit repeat
 			end if
@@ -86,8 +105,7 @@ on run
 	
 	try
 		_plist's setKey(cachePath, "timestamp", (current date))
-		_plist's setKey(cachePath, "reminderCount", count of existingReminders)
-		my plistDictFromArray(cachePath, "reminder", existingReminders)
+		_plist's setKey(cachePath, "reminderCount", i - 1)
 		_plist's setKey(cachePath, "cacheInProgress", 0)
 	on error errMsg
 		return errMsg
@@ -96,22 +114,3 @@ on run
 	if didTimeout then return "timed out"
 	return
 end run
-
---convert a list to a dict
-on plistDictFromArray(posixPath, prefix, theList)
-	try
-		tell application "System Events"
-			tell property list file posixPath
-				tell contents
-					set i to 1
-					repeat with theItem in theList
-						make new property list item at end with properties {kind:record, name:prefix & i, value:theItem}
-						set i to i + 1
-					end repeat
-				end tell
-			end tell
-		end tell
-	on error eMsg number eNum
-		error "Can't setPlistArray: " & eMsg number eNum
-	end try
-end plistDictFromArray
