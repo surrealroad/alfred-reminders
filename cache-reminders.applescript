@@ -84,7 +84,11 @@ on run
 				return "Can't write plist: " & eMsg & " number " & eNum
 			end try
 			
+			--update reminder count
+			_plist's setKey(cachePath, "reminderCount", i)
+			
 			set i to i + 1
+			
 			if ((current date) - inTime) is greater than theTimeout then
 				set didTimeout to true
 				exit repeat

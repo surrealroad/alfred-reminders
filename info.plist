@@ -214,7 +214,7 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 
-property currentVersion : 43
+property currentVersion : 44
 property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
