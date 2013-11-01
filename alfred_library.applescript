@@ -754,6 +754,8 @@ on convertTime(theTimeStr)
 	set pm to false
 	set num to 0
 	try
+		if theTimeStr is "noon" then set theTimeStr to "12pm"
+		if theTimeStr is "midnight" then set theTimeStr to "12am"
 		if (count of (characters of theTimeStr)) is greater than 1 then
 			set old_delims to AppleScript's text item delimiters
 			set AppleScript's text item delimiters to ""
@@ -764,6 +766,7 @@ on convertTime(theTimeStr)
 				set theTimeStr to (characters 1 thru -3 of theTimeStr) as string
 				set pm to true
 			end if
+			
 			set AppleScript's text item delimiters to old_delims
 		end if
 		if (offset of "." in theTimeStr) is greater than 0 then
@@ -771,11 +774,21 @@ on convertTime(theTimeStr)
 			set theOffset to (offset of "." in theTimeStr)
 			set num to num + ((text 1 thru (theOffset - 1) of theTimeStr) * hours)
 			set num to num + ((text (theOffset + 1) thru -1 of theTimeStr) * minutes)
+			if num is greater than or equal to (12 * hours) then
+				set pm to true
+			else
+				set am to true
+			end if
 		else if (offset of ":" in theTimeStr) is greater than 0 then
 			-- check for form 1:30
 			set theOffset to (offset of ":" in theTimeStr)
 			set num to num + ((text 1 thru (theOffset - 1) of theTimeStr) * hours)
 			set num to num + ((text (theOffset + 1) thru -1 of theTimeStr) * minutes)
+			if num is greater than or equal to (12 * hours) then
+				set pm to true
+			else
+				set am to true
+			end if
 		else
 			-- assume hours
 			set num to num + (theTimeStr * hours)
@@ -786,6 +799,8 @@ on convertTime(theTimeStr)
 			and num is less than (12 * hours) Â
 			and num is less than ((current date)'s time) then
 			set pm to true
+		else if num is greater than or equal to (12 * hours) then
+			set num to (num - (12 * hours))
 		end if
 		
 		if pm then
