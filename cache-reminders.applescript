@@ -6,44 +6,23 @@ on run
 	tell application "Finder" to set workflowFolder to (folder of myPath) as string
 	set lib to load script file (workflowFolder & "alfred_library.scpt")
 	set wf to load script file (workflowFolder & "q_workflow.scpt")
-	set _plist to load script file (workflowFolder & "_plist.scpt")
 	
 	set wf to wf's new_workflow_with_bundle(bundleid) --create folders and set up paths
 	set cachePath to wf's _data & cacheFile
 	
-	if lib's FileExists(cachePath) then
-		try
-			set cacheInProgress to _plist's readKey(cachePath, "cacheInProgress")
+	try
+		if wf's get_value("cacheInProgress", cacheFile) then
 			-- prevent multiple cache processes overlapping
-			if cacheInProgress then
-				return "Cache already in progress"
-			end if
-		end try
-	end if
-	
-	--create a new file
-	_plist's newPlist(cachePath)
-	
-	--check keys exist
-	try
-		_plist's setKey(cachePath, "cacheInProgress", (lib's unixtime(current date)))
-	on error
-		_plist's addKey(cachePath, "cacheInProgress", (lib's unixtime(current date)))
+			return "Cache already in progress"
+		end if
 	end try
+	
+	wf's set_value("cacheInProgress", lib's unixtime(current date), cacheFile)
+	
 	try
-		_plist's readKey(cachePath, "timestamp")
+		wf's get_value("reminderCount", cacheFile)
 	on error
-		_plist's addKey(cachePath, "timestamp", (current date))
-	end try
-	(*try
-		_plist's readKey(cachePath, "existingReminders")
-	on error
-		_plist's addKey(cachePath, "existingReminders", {})
-	end try*)
-	try
-		_plist's readKey(cachePath, "reminderCount")
-	on error
-		_plist's addKey(cachePath, "reminderCount", 0)
+		wf's set_value("reminderCount", 0, cacheFile)
 	end try
 	
 	set existingReminders to {}
@@ -85,7 +64,7 @@ on run
 			end try
 			
 			--update reminder count
-			_plist's setKey(cachePath, "reminderCount", i)
+			wf's set_value("reminderCount", i, cacheFile)
 			
 			set i to i + 1
 			
@@ -108,9 +87,9 @@ on run
 	end tell
 	
 	try
-		_plist's setKey(cachePath, "timestamp", (current date))
-		_plist's setKey(cachePath, "reminderCount", i - 1)
-		_plist's setKey(cachePath, "cacheInProgress", 0)
+		wf's set_value("timestamp", (current date), cacheFile)
+		wf's set_value("reminderCount", i - 1, cacheFile)
+		wf's set_value("cacheInProgress", 0, cacheFile)
 	on error errMsg
 		return errMsg
 	end try
