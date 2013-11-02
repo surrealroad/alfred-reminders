@@ -3,7 +3,7 @@ property closeReminders : false
 property closeNotes : false
 property updateURL : "http://www.surrealroad.com/alfred/version-check.php"
 property downloadURL : "http://www.surrealroad.com/alfred/download.php"
-property workflowFolder : missing value
+property workflowFolder : do shell script "pwd"
 
 -- localisation
 
@@ -71,10 +71,12 @@ end setRemindersActive
 
 on getCachedReminderList(wf, cacheFile)
 	set existingReminders to {}
-	set reminderCount to wf's get_value("reminderCount", cacheFile)
-	repeat with i from 1 to reminderCount
-		set end of existingReminders to wf's get_value("reminder" & i, cacheFile)
-	end repeat
+	try
+		set reminderCount to wf's get_value("reminderCount", cacheFile)
+		repeat with i from 1 to reminderCount
+			set end of existingReminders to wf's get_value("reminder" & i, cacheFile)
+		end repeat
+	end try
 	return existingReminders
 end getCachedReminderList
 
@@ -101,16 +103,16 @@ on cacheReminders(wf, cacheFile)
 	wf's set_value("closeReminders", closeReminders, cacheFile)
 	
 	-- spawn cache process
-	spawnReminderCache(workflowFolder & "/cache-reminders.scpt", true)
+	spawnReminderCache(workflowFolder & "/cache-reminders.scpt", true, "")
 	return existingReminders
 end cacheReminders
 
-on spawnReminderCache(cacheScript, runInBackground)
+on spawnReminderCache(cacheScript, runInBackground, parameters)
 	-- spawn cache process
 	if runInBackground then
-		do shell script "osascript " & quoted form of cacheScript & " > /dev/null 2>&1 & "
+		do shell script "osascript " & quoted form of cacheScript & space & parameters & " > /dev/null 2>&1 & "
 	else
-		do shell script "osascript " & quoted form of cacheScript
+		do shell script "osascript " & quoted form of cacheScript & space & parameters
 	end if
 end spawnReminderCache
 
@@ -690,10 +692,10 @@ on alfred_version_notify(wfname, bundleid, currentversion, wf, cacheFile, checkF
 end alfred_version_notify
 
 on isLatestVersion(bundleid, currentversion, wf, cacheFile, checkFrequency)
-	set timestamp to wf's get_value("updatecheck", cacheFile)
-	set lastResult to wf's get_value("isLatestVersion", cacheFile)
-	set lastVersion to wf's get_value("latestversion", cacheFile)
 	try
+		set timestamp to wf's get_value("updatecheck", cacheFile)
+		set lastResult to wf's get_value("isLatestVersion", cacheFile)
+		set lastVersion to wf's get_value("latestversion", cacheFile)
 		set lastVersion to lastVersion as number
 	end try
 	
@@ -707,7 +709,7 @@ on isLatestVersion(bundleid, currentversion, wf, cacheFile, checkFrequency)
 		end if
 	end if
 	-- spawn cache process
-	do shell script "osascript " & quoted form of (workflowFolder & "/cache-update.scpt") & space & quoted form of bundleid & space & currentversion & " > /dev/null 2>&1 & "
+	spawnReminderCache(workflowFolder & "/cache-update.scpt", true, bundleid & space & currentversion)
 	return true
 end isLatestVersion
 
