@@ -457,7 +457,13 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 				end if
 			end using terms from
 		end tell
-		my cacheReminders(wf, cacheFile)
+		set osver to system version of (system info)
+		if osver contains "10.9" then 
+		set cacheReminders to false
+		else
+		set cacheReminders to true
+		end
+		if cacheReminders then my cacheReminders(wf, cacheFile)
 		set theResult to "Created reminder: " & theText
 	end if
 	return theResult
