@@ -215,7 +215,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 49
+property currentVersion : 50
 property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
@@ -574,6 +574,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Thursday, 9 January 2014 – Fixed Finder links in OS 10.9
 Saturday, 23 November 2013 – Disable display of existing reminders under OS 10.9
 Friday, 22 November 2013 – Workflow will now display a message if the command is not valid
 Saturday, 2 November 2013 – Fixed an issue that would cause the workflow to crash the first few times it was run; fixed an issue that would prevent update checking to work correctly
