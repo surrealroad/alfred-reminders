@@ -458,11 +458,11 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 			end using terms from
 		end tell
 		set osver to system version of (system info)
-		if osver contains "10.9" then 
-		set cacheReminders to false
+		if osver contains "10.9" then
+			set cacheReminders to false
 		else
-		set cacheReminders to true
-		end
+			set cacheReminders to true
+		end if
 		if cacheReminders then my cacheReminders(wf, cacheFile)
 		set theResult to "Created reminder: " & theText
 	end if
@@ -491,39 +491,43 @@ on setNotesActive()
 	end if
 end setNotesActive
 
-on createNote(noteTitle, noteBody, notesFolder, notesAccount)
-	tell application id "com.apple.Notes"
-		using terms from application "Notes"
-			if notesAccount is not "" then
-				tell account notesAccount
-					if notesFolder is not "" then
-						tell folder notesFolder to make new note with properties {name:noteTitle, body:noteBody}
-					else
-						tell first folder to make new note with properties {name:noteTitle, body:noteBody}
-					end if
-				end tell
-			else
-				tell first account
-					if notesFolder is not "" then
-						tell folder notesFolder to make new note with properties {name:noteTitle, body:noteBody}
-					else
-						tell first folder to make new note with properties {name:noteTitle, body:noteBody}
-					end if
-					
-				end tell
-			end if
-		end using terms from
+on createNote(noteTitle, noteBody, notesFolder, notesAccount, showNote)
+	tell application "Notes"
+		if notesAccount is not "" then
+			tell account notesAccount
+				if notesFolder is not "" then
+					tell folder notesFolder to set theNote to make new note with properties {name:noteTitle, body:noteBody}
+				else
+					tell first folder to set theNote to make new note with properties {name:noteTitle, body:noteBody}
+				end if
+			end tell
+		else
+			tell first account
+				if notesFolder is not "" then
+					tell folder notesFolder to set theNote to make new note with properties {name:noteTitle, body:noteBody}
+				else
+					tell first folder to set theNote to make new note with properties {name:noteTitle, body:noteBody}
+				end if
+			end tell
+		end if
 	end tell
+	if showNote then
+		set old_delim to AppleScript's text item delimiters
+		set AppleScript's text item delimiters to "/"
+		set noteFile to (last text item of (theNote's id as string)) & ".notesexternalrecord"
+		set AppleScript's text item delimiters to old_delim
+		do shell script "find ~/Library/Containers/com.apple.Notes/Data/Library/CoreData/ -name " & quoted form of noteFile & " |xargs open"
+	end if
 end createNote
 
-on noteFromClipboard(q, notesFolder, notesAccount, wf)
+on noteFromClipboard(q, notesFolder, notesAccount, wf, showNote)
 	set noteHTMLText to my clipboardAsHTML(wf)
 	if q is not "" then
 		set noteTitle to q
 	else
 		set noteTitle to first paragraph of (the clipboard as string)
 	end if
-	createNote(noteTitle, noteHTMLText, notesFolder, notesAccount)
+	createNote(noteTitle, noteHTMLText, notesFolder, notesAccount, showNote)
 	return noteTitle
 end noteFromClipboard
 
