@@ -1,6 +1,5 @@
-property workflowFolder : do shell script "pwd"
-
 on reminderFromApplication(theApplication)
+set workflowFolder to do shell script "pwd"
 	set theText to ""
 	set theBody to ""
 	if theApplication is "Google Chrome.app" then
