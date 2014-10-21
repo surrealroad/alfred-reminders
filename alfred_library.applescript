@@ -458,7 +458,7 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 			end using terms from
 		end tell
 		set osver to system version of (system info)
-		if osver contains "10.9" then
+		if osver contains "10.9" or osver contains "10.10" then
 			set cache to false
 		else
 			set cache to true
