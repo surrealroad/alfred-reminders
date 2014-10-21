@@ -215,7 +215,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 51
+property currentVersion : 52
 property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
@@ -574,6 +574,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Tuesday, 21 October 2014 – fixed execution error: «script» doesn’t understand the “cacheReminders” message. (-1708)
 Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)
 Thursday, 9 January 2014 – Fixed Finder links in OS 10.9
 Saturday, 23 November 2013 – Disable display of existing reminders under OS 10.9

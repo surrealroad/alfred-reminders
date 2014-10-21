@@ -87,7 +87,7 @@ on fetchReminderList(wf, cacheFile, cacheExpires)
 			return getCachedReminderList(wf, cacheFile)
 		end if
 	end try
-	return cacheReminders(wf, cacheFile)
+	return my cacheReminders(wf, cacheFile)
 end fetchReminderList
 
 on cacheReminders(wf, cacheFile)
@@ -459,11 +459,11 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 		end tell
 		set osver to system version of (system info)
 		if osver contains "10.9" then
-			set cacheReminders to false
+			set cache to false
 		else
-			set cacheReminders to true
+			set cache to true
 		end if
-		if cacheReminders then my cacheReminders(wf, cacheFile)
+		if cache then my cacheReminders(wf, cacheFile)
 		set theResult to "Created reminder: " & theText
 	end if
 	return theResult
