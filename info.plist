@@ -586,7 +586,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
-Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10
+Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected
 Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)
 Thursday, 9 January 2014 – Fixed Finder links in OS 10.9
 Saturday, 23 November 2013 – Disable display of existing reminders under OS 10.9
