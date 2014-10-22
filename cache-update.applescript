@@ -1,4 +1,5 @@
 property cacheFile : "cache.plist"
+property workflowFolder : do shell script "pwd"
 
 on run argv
 	set bundleid to item 1 of argv
