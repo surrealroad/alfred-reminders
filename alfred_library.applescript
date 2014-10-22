@@ -103,7 +103,7 @@ on cacheReminders(wf, cacheFile)
 	wf's set_value("closeReminders", closeReminders, cacheFile)
 	
 	-- spawn cache process
-	spawnReminderCache(workflowFolder & "/cache-reminders.scpt", true, "")
+	my spawnReminderCache(workflowFolder & "/cache-reminders.scpt", true, "")
 	return existingReminders
 end cacheReminders
 
@@ -695,7 +695,7 @@ end isAppSupported
 
 on alfred_version_notify(wfname, bundleid, currentversion, wf, cacheFile, checkFrequency)
 	set notify to {}
-	if not isLatestVersion(bundleid, currentversion, wf, cacheFile, checkFrequency) then
+	if not my isLatestVersion(bundleid, currentversion, wf, cacheFile, checkFrequency) then
 		set notify to alfred_result_item_with_icon(bundleid & "-update", "A new version of the " & wfname & " workflow is available", "Download the latest version", "@@UPDATE@@", true, "new.png")
 	end if
 	return notify
@@ -719,7 +719,7 @@ on isLatestVersion(bundleid, currentversion, wf, cacheFile, checkFrequency)
 		end if
 	end if
 	-- spawn cache process
-	spawnReminderCache(workflowFolder & "/cache-update.scpt", true, bundleid & space & currentversion)
+	my spawnReminderCache(workflowFolder & "/cache-update.scpt", true, bundleid & space & currentversion)
 	return true
 end isLatestVersion
 
