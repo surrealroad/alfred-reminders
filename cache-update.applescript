@@ -9,6 +9,13 @@ on run argv
 	set wf to load script file (workflowFolder & "q_workflow.scpt")
 	
 	set wf to wf's new_workflow_with_bundle(bundleid)
+	set cachePath to wf's _data & cacheFile
+	
+	--create plist if it doesn't already exist
+	if not wf's q_file_exists(cachePath) then
+		-- OS 10.10 workaround
+		do shell script "defaults write " & quoted form of cachePath & " cacheInProgress 0"
+	end if
 	
 	wf's set_value("updatecheck", (current date), cacheFile)
 	

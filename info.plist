@@ -215,8 +215,9 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 53
-property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property currentVersion : 54
+property workflowFolder : do shell script "pwd"
+property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
 property wfname : "Reminders"
@@ -586,6 +587,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10
 Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected
 Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)
 Thursday, 9 January 2014 – Fixed Finder links in OS 10.9
