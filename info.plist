@@ -215,8 +215,9 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 51
-property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property currentVersion : 54
+property workflowFolder : do shell script "pwd"
+property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
 property wfname : "Reminders"
@@ -226,7 +227,12 @@ set wf to wf's new_workflow_with_bundle(bundleid)
 set workflowFolder of lib to workflowFolder
 set osver to system version of (system info)
 if (osver contains "10.9" or osver contains "10.10") then set showReminders to falsemy alfred_script("{query}")on alfred_script(q)	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
-	if q is "" and showReminders then set q to "all"	-- set create reminder action	set theText to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)	end if		if theApplication is "" and showReminders then		if q is "refresh" then lib's spawnReminderCache(workflowFolder &amp; "/cache-reminders.scpt", false, "")		--fetch existing reminders		set reminderList to {}		set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)		set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	else		set filteredReminders to {}	end if		--version check	if shouldCheckForUpdates then		set cacheFile of update to cacheFile		set workflowFolder of update to (workflowFolder as string)		try			set versionAction to lib's alfred_version_notify(wfname, bundleid, currentVersion, wf, cacheFile, checkFrequency)		end try	else		set versionAction to ""	end if
+	if q is "" and showReminders then set q to "all"	-- set create reminder action	set theText to ""
+	set theDate to ""
+	set theList to ""
+	set theApplication to ""
+	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)	end if		if theApplication is "" and showReminders then		if q is "refresh" then lib's spawnReminderCache(workflowFolder &amp; "/cache-reminders.scpt", false, "")		--fetch existing reminders		set reminderList to {}		set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)		set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	else		set filteredReminders to {}	end if		--version check
+	set versionAction to ""	if shouldCheckForUpdates then		set cacheFile of update to cacheFile		set workflowFolder of update to (workflowFolder as string)		try			set versionAction to lib's alfred_version_notify(wfname, bundleid, currentVersion, wf, cacheFile, checkFrequency)		end try	end if
 	
 	if ((addAction is "") and (filteredReminders is {})) then
 		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Reminder command not recognised or no matching reminders found", "Type r help for some examples", "", "no", theIcon)})	end if		return lib's alfred_result_items({versionAction, addAction, filteredReminders})end alfred_script</string>
@@ -290,7 +296,11 @@ property wfname : "Reminders"
 property bundleid : "com.surrealroad.alfred-reminder"property uid : "add-reminder"property addActionTitle : "Add Reminder"property cacheFile : "cache.plist"
 
 set wf to wf's new_workflow_with_bundle(bundleid)
-set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)	-- set create reminder action	set theText to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)
+set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)	-- set create reminder action	set theText to ""
+	set theDate to ""
+	set theList to ""
+	set theApplication to ""
+	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)
 	end if
 	
 	if addAction is "" then
@@ -327,7 +337,11 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 property showReminders : trueset wf to wf's new_workflow_with_bundle(bundleid)set workflowFolder of lib to workflowFolder
 set osver to system version of (system info)
 if (osver contains "10.9" or osver contains "10.10") then set showReminders to falseif showReminders then my alfred_script("{query}")on alfred_script(q)
-	set theText to ""	set valid to "no"	lib's setRemindersActive()
+	set theText to ""
+	set theDate to ""
+	set theList to ""
+	set theApplication to ""
+	set theIcon to ""	set valid to "no"	lib's setRemindersActive()
 	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theIcon to theIcon of reminder	end try		--fetch existing reminders	set reminderList to {}	set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)	set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	
 	if filteredReminders is {} then
 		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "No matching reminders found", "Please try a different query", "", "no", theIcon)})	end if		return lib's alfred_result_items({filteredReminders})end alfred_script</string>
@@ -574,6 +588,9 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.
+Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10
+Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected
 Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)
 Thursday, 9 January 2014 – Fixed Finder links in OS 10.9
 Saturday, 23 November 2013 – Disable display of existing reminders under OS 10.9

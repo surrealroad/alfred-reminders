@@ -10,6 +10,12 @@ on run
 	set wf to wf's new_workflow_with_bundle(bundleid) --create folders and set up paths
 	set cachePath to wf's _data & cacheFile
 	
+	--create plist if it doesn't already exist
+	if not wf's q_file_exists(cachePath) then
+		-- OS 10.10 workaround
+		do shell script "defaults write " & quoted form of cachePath & " cacheInProgress 0"
+	end if
+	
 	try
 		if wf's get_value("cacheInProgress", cacheFile) then
 			-- prevent multiple cache processes overlapping
@@ -27,7 +33,8 @@ on run
 	
 	set existingReminders to {}
 	set didTimeout to false
-	if (system version of (system info)) is "10.9" then
+	set osver to system version of (system info)
+	if osver contains "10.9" or osver contains "10.10" then
 		set theTimeout to 600 --1000
 	else
 		set theTimeout to 100
