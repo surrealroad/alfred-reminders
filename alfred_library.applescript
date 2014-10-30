@@ -228,7 +228,7 @@ on parseReminder(q)
 				set q to my middleText(q, 2, -1)
 				set theDate to ((current date) + days)
 				set valid to "yes"
-			else  if (length of first word of q) is greater than 2 and "today" starts with first word of q  then
+			else if (length of first word of q) is greater than 2 and "today" starts with first word of q then
 				set q to my middleText(q, 2, -1)
 				set theDate to (current date)
 				set valid to "yes"
@@ -241,7 +241,7 @@ on parseReminder(q)
 		
 		try
 			if theDate is "" and first word of q is "in" and Â
-				(third word of q is "minutes" or third word of q is "minute") then
+				(third word of q is "minutes" or third word of q is "minute" or third word of q is "mins" or third word of q is "min") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + minutes * (my middleText(q, 2, 2)))
 				set valid to "yes"
@@ -251,14 +251,14 @@ on parseReminder(q)
 				set theDate to ((current date) + days * (my middleText(q, 2, 2)))
 				-- check for x days y hours
 				try
-					if (fifth word of q is "hours" or fifth word of q is "hour") then
+					if (fifth word of q is "hours" or fifth word of q is "hour" or fifth word of q is "hr") then
 						set theText to my middleText(q, 6, -1)
 						set theDate to (theDate + hours * (my middleText(q, 4, 4)))
 					end if
 				end try
 				set valid to "yes"
 			else if theDate is "" and first word of q is "in" and Â
-				(third word of q is "hours" or third word of q is "hour") then
+				(third word of q is "hours" or third word of q is "hour" or third word of q is "hr") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + hours * (my middleText(q, 2, 2)))
 				try

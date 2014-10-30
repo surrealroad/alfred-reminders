@@ -588,7 +588,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
-Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.)
+Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”
 Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10
 Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected
 Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)
