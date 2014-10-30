@@ -182,6 +182,7 @@ on parseReminder(q)
 	set theText to ""
 	set theDate to ""
 	set theList to ""
+	set thePriority to ""
 	set theApplication to ""
 	set theIcon to ""
 	set valid to ""
@@ -196,6 +197,33 @@ on parseReminder(q)
 	end if
 	
 	if q is not allString and q is not overdueString and q is not refreshString then
+		
+		try
+			set old_delims to AppleScript's text item delimiters
+			set AppleScript's text item delimiters to space
+			set q_items to text items of q
+			set AppleScript's text item delimiters to old_delims
+			if last item of q_items starts with "!" then
+				set p to last item of q_items
+				if p is "!" then
+					set thePriority to "1"
+					set valid to "yes"
+					set q to (characters 1 thru -3 of q) as text
+				else if p is "!3" then
+					set thePriority to "1"
+					set valid to "yes"
+					set q to (characters 1 thru -4 of q) as text
+				else if p is "!2" then
+					set thePriority to "5"
+					set valid to "yes"
+					set q to (characters 1 thru -4 of q) as text
+				else if p is "!1" then
+					set thePriority to "9"
+					set valid to "yes"
+					set q to (characters 1 thru -4 of q) as text
+				end if
+			end if
+		end try
 		
 		try
 			if last word of q is "list" then
@@ -334,7 +362,7 @@ on parseReminder(q)
 	end if
 	set theText to (theText as string)
 	if theIcon is "" then set theIcon to my reminderIcon(theApplication)
-	return {theText:theText, theDate:theDate, valid:valid, theList:theList, theApplication:theApplication, theIcon:theIcon}
+	return {theText:theText, theDate:theDate, valid:valid, theList:theList, thePriority:thePriority, theApplication:theApplication, theIcon:theIcon}
 end parseReminder
 
 on reminderIcon(theApplication)
@@ -350,7 +378,7 @@ on reminderIcon(theApplication)
 	end if
 end reminderIcon
 
-on formatReminderSubtitle(theText, theDate, theList, theApplication)
+on formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)
 	if theApplication is not "" and not isAppSupported(theApplication, "Reminders") then
 		return theApplication & " is not currently supported by this workflow"
 	end if
@@ -360,6 +388,9 @@ on formatReminderSubtitle(theText, theDate, theList, theApplication)
 	if theText is not "" then set subtitle to subtitle & " to " & theText
 	if theDate is not "" then set subtitle to subtitle & " on " & (theDate as string)
 	if theList is not "" then set subtitle to subtitle & " in " & quoted form of theList
+	if thePriority is "9" then set subtitle to subtitle & " (low priority)"
+	if thePriority is "5" then set subtitle to subtitle & " (medium priority)"
+	if thePriority is "1" then set subtitle to subtitle & " (high priority)"
 	return subtitle
 end formatReminderSubtitle
 
@@ -368,14 +399,14 @@ on reminderHelp()
 		alfred_result_item_with_icon("reminder-help-1", "r all", "Show all outstanding reminders", "all", "no", "checked.png"), Â
 		alfred_result_item_with_icon("reminder-help-2", "r refresh", "Refresh outstanding reminders", "refresh", "no", "checked.png"), Â
 		alfred_result_item_with_icon("reminder-help-3", "r overdue", "Show overdue reminders", "overdue", "no", "checked.png"), Â
-		alfred_result_item_with_icon("reminder-help-4", "r this", formatReminderSubtitle("", "", "", my frontmostapp()), "this", "no", "App.png") Â
+		alfred_result_item_with_icon("reminder-help-4", "r this", formatReminderSubtitle("", "", "", my frontmostapp(), ""), "this", "no", "App.png") Â
 			}
 	set i to 5
 	repeat with helpItem in reminderHelpItems
 		set parsedReminder to my parseReminder(helpItem)
 		set end of theResult to my alfred_result_item_with_icon("reminder-help-" & i, Â
 			"r " & helpItem, Â
-			formatReminderSubtitle(theText of parsedReminder, theDate of parsedReminder, theList of parsedReminder, theApplication of parsedReminder), Â
+			formatReminderSubtitle(theText of parsedReminder, theDate of parsedReminder, theList of parsedReminder, theApplication of parsedReminder, thePriority of parsedReminder), Â
 			helpItem, Â
 			"no", Â
 			"unchecked.png")
@@ -416,6 +447,7 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 		set reminder to my parseReminder(q)
 		set theText to theText of reminder
 		set theDate to theDate of reminder
+		set thePriority to thePriority of reminder
 		set theApplication to theApplication of reminder
 		set valid to valid of reminder
 		set rList to theList of reminder
@@ -444,11 +476,11 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 				end if
 				if theDate is not "" then
 					tell list theList
-						set theReminder to make new reminder with properties {name:theText, remind me date:theDate, body:theBody}
+						set theReminder to make new reminder with properties {name:theText, remind me date:theDate, body:theBody, priority:thePriority}
 					end tell
 				else
 					tell list theList
-						set theReminder to make new reminder with properties {name:theText, body:theBody}
+						set theReminder to make new reminder with properties {name:theText, body:theBody, priority:thePriority}
 					end tell
 				end if
 				if shouldOpen then

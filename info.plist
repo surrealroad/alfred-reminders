@@ -215,7 +215,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 54
+property currentVersion : 55
 property workflowFolder : do shell script "pwd"
 property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
@@ -229,9 +229,11 @@ set osver to system version of (system info)
 if (osver contains "10.9" or osver contains "10.10") then set showReminders to falsemy alfred_script("{query}")on alfred_script(q)	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
 	if q is "" and showReminders then set q to "all"	-- set create reminder action	set theText to ""
 	set theDate to ""
+	set thePriority to ""
 	set theList to ""
 	set theApplication to ""
-	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)	end if		if theApplication is "" and showReminders then		if q is "refresh" then lib's spawnReminderCache(workflowFolder &amp; "/cache-reminders.scpt", false, "")		--fetch existing reminders		set reminderList to {}		set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)		set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	else		set filteredReminders to {}	end if		--version check
+	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder
+		set thePriority to thePriority of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)	end if		if theApplication is "" and showReminders then		if q is "refresh" then lib's spawnReminderCache(workflowFolder &amp; "/cache-reminders.scpt", false, "")		--fetch existing reminders		set reminderList to {}		set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)		set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	else		set filteredReminders to {}	end if		--version check
 	set versionAction to ""	if shouldCheckForUpdates then		set cacheFile of update to cacheFile		set workflowFolder of update to (workflowFolder as string)		try			set versionAction to lib's alfred_version_notify(wfname, bundleid, currentVersion, wf, cacheFile, checkFrequency)		end try	end if
 	
 	if ((addAction is "") and (filteredReminders is {})) then
@@ -298,9 +300,11 @@ property bundleid : "com.surrealroad.alfred-reminder"property uid : "add-remind
 set wf to wf's new_workflow_with_bundle(bundleid)
 set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)	-- set create reminder action	set theText to ""
 	set theDate to ""
+	set thePriority to ""
 	set theList to ""
 	set theApplication to ""
-	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)
+	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder
+		set thePriority to thePriority of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)
 	end if
 	
 	if addAction is "" then
@@ -483,7 +487,8 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 set theResult to theResult &amp; "Test in x list query: "
 set testStart to (current date)try	set q to "in something in test result list"	set qResult to lib's parseReminder(q)	if (theList of qResult) is equal to "test result" then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test subtitle generationset theResult to theResult &amp; "Subtitle generation: "
-set testStart to (current date)try	set theText to "test"	set theDate to current date	set theList to "test list"	set theApplication to ""	set expectedResult to "Create a new reminder to test on " &amp; (theDate as string) &amp; " in " &amp; quoted form of theList	set qResult to lib's formatReminderSubtitle(theText, theDate, theList, theApplication)	if qResult is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+set testStart to (current date)try	set theText to "test"	set theDate to current date	set theList to "test list"	set theApplication to ""
+	set thePriority to "1"	set expectedResult to "Create a new reminder to test on " &amp; (theDate as string) &amp; " in " &amp; quoted form of theList &amp; " (low priority)"	set qResult to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)	if qResult is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test reminder filteringset theResult to theResult &amp; "Test basic reminder filtering: "
 set testStart to (current date)try	set theUID to "test"	set theText to "something"	set theDate to ""	set theList to ""	set theReminder to {uid:theUID, title:theText, creationdate:(current date)}	set reminderList to {theReminder}	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)	if first item of filteredReminders is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
@@ -588,7 +593,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
-Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”
+Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”; the priority of the reminder can now be specified by “ !” at the end of the query, “ !1”,“ !2”,“ !3” each with increasing priorities
 Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10
 Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected
 Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)
