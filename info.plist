@@ -215,7 +215,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 55
+property currentVersion : 56
 property workflowFolder : do shell script "pwd"
 property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
@@ -450,13 +450,25 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; returnset theResult to theResult &amp; "Fetch reminder list info: "
 set testStart to (current date)try	set reminderList to missing value	tell application id "com.apple.reminders"		set reminderList to name of first list	end tell	if reminderList is not missing value then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test fetching cached variablesset theResult to theResult &amp; "Run cache process: "
-set testStart to (current date)try	set cacheResult to do shell script "osascript " &amp; quoted form of workflowFolder &amp; "/cache-reminders.scpt"	if cacheResult is "" then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; cacheResult	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+set osver to system version of (system info)if osver contains "10.9" or osver contains "10.10" then	set cache to falseelse	set cache to trueend if
+set testStart to (current date)if cache then	try		set cacheResult to do shell script "osascript " &amp; quoted form of workflowFolder &amp; "/cache-reminders.scpt"		if cacheResult is "" then			set theResult to theResult &amp; "OK"		else			set theResult to theResult &amp; cacheResult		end if	on error errMsg		set theResult to theResult &amp; "ERROR: " &amp; errMsg	end try
+else
+	set theResult to theResult &amp; "SKIPPED"
+end if
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
 set theResult to theResult &amp; "Fetch cache timestamp: "
-set testStart to (current date)try	set theResult to theResult &amp; wf's get_value("timestamp", cacheFile)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+set testStart to (current date)
+if cache then	try		set theResult to theResult &amp; wf's get_value("timestamp", cacheFile)	on error errMsg		set theResult to theResult &amp; "ERROR: " &amp; errMsg	end try
+else
+	set theResult to theResult &amp; "SKIPPED"
+end if
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
 set theResult to theResult &amp; "Fetch cached reminder count: "
-set testStart to (current date)try	set cachedReminderList to lib's getCachedReminderList(wf, cacheFile)	set theResult to theResult &amp; (count of cachedReminderList)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+set testStart to (current date)
+if cache then	try		set cachedReminderList to lib's getCachedReminderList(wf, cacheFile)		set theResult to theResult &amp; (count of cachedReminderList)	on error errMsg		set theResult to theResult &amp; "ERROR: " &amp; errMsg	end try
+else
+	set theResult to theResult &amp; "SKIPPED"
+end if
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test parseReminder suiteset theResult to theResult &amp; "Test basic query: "
 set testStart to (current date)try	set q to "something"	set qResult to lib's parseReminder(q)	if (theText of qResult) is equal to q then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
@@ -488,7 +500,7 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 set testStart to (current date)try	set q to "in something in test result list"	set qResult to lib's parseReminder(q)	if (theList of qResult) is equal to "test result" then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test subtitle generationset theResult to theResult &amp; "Subtitle generation: "
 set testStart to (current date)try	set theText to "test"	set theDate to current date	set theList to "test list"	set theApplication to ""
-	set thePriority to "1"	set expectedResult to "Create a new reminder to test on " &amp; (theDate as string) &amp; " in " &amp; quoted form of theList &amp; " (low priority)"	set qResult to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)	if qResult is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+	set thePriority to "9"	set expectedResult to "Create a new reminder to test on " &amp; (theDate as string) &amp; " in " &amp; quoted form of theList &amp; " (low priority)"	set qResult to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)	if qResult is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test reminder filteringset theResult to theResult &amp; "Test basic reminder filtering: "
 set testStart to (current date)try	set theUID to "test"	set theText to "something"	set theDate to ""	set theList to ""	set theReminder to {uid:theUID, title:theText, creationdate:(current date)}	set reminderList to {theReminder}	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)	if first item of filteredReminders is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
@@ -593,6 +605,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Wednesday, 12 November 2014 – rtest will no longer test reminder caching on OS 10.9+
 Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”; the priority of the reminder can now be specified by “ !” at the end of the query, “ !1”,“ !2”,“ !3” each with increasing priorities
 Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10
 Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected
