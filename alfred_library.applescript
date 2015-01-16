@@ -203,6 +203,7 @@ on parseReminder(q)
 			set AppleScript's text item delimiters to space
 			set q_items to text items of q
 			set AppleScript's text item delimiters to old_delims
+			-- check for !x (priority)
 			if last item of q_items starts with "!" then
 				set p to last item of q_items
 				if p is "!" then
@@ -226,6 +227,7 @@ on parseReminder(q)
 		end try
 		
 		try
+			-- check for x in y list
 			if last word of q is "list" then
 				set old_delims to AppleScript's text item delimiters
 				set AppleScript's text item delimiters to space
@@ -252,14 +254,17 @@ on parseReminder(q)
 		end try
 		
 		try
+		-- check for tomorrow x
 			if (length of first word of q) is greater than 2 and "tomorrow" starts with first word of q then
 				set q to my middleText(q, 2, -1)
 				set theDate to ((current date) + days)
 				set valid to "yes"
+				-- check for today x
 			else if (length of first word of q) is greater than 2 and "today" starts with first word of q then
 				set q to my middleText(q, 2, -1)
 				set theDate to (current date)
 				set valid to "yes"
+				-- check for {day} x
 			else if my datefromweekday(first word of q) is not false then
 				set theDate to my datefromweekday(first word of q)
 				set q to my middleText(q, 2, -1)
@@ -268,11 +273,13 @@ on parseReminder(q)
 		end try
 		
 		try
+		-- check for in x minutes y
 			if theDate is "" and first word of q is "in" and Â
 				(third word of q is "minutes" or third word of q is "minute" or third word of q is "mins" or third word of q is "min") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + minutes * (my middleText(q, 2, 2)))
 				set valid to "yes"
+			-- check for in x days y
 			else if theDate is "" and first word of q is "in" and Â
 				(third word of q is "days" or third word of q is "day") then
 				set theText to my middleText(q, 4, -1)
@@ -285,17 +292,20 @@ on parseReminder(q)
 					end if
 				end try
 				set valid to "yes"
+			-- check for in x hours y
 			else if theDate is "" and first word of q is "in" and Â
 				(third word of q is "hours" or third word of q is "hour" or third word of q is "hr") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + hours * (my middleText(q, 2, 2)))
+				-- check for in x hours y minutes z
 				try
-					if (fifth word of q is "minutes" or fifth word of q is "minute") then
+					if (fifth word of q is "minutes" or fifth word of q is "minute" or fifth word of q is "mins") then
 						set theText to my middleText(q, 6, -1)
 						set theDate to (theDate + minutes * (my middleText(q, 4, 4)))
 					end if
 				end try
 				set valid to "yes"
+				-- check for on {date} to x
 			else if theDate is "" and first word of q is "on" then
 				set old_delims to AppleScript's text item delimiters
 				set AppleScript's text item delimiters to space
@@ -317,6 +327,7 @@ on parseReminder(q)
 					end try
 				end if
 				set AppleScript's text item delimiters to old_delims
+				-- check for at {time} to x
 			else if first word of q is "at" then
 				set old_delims to AppleScript's text item delimiters
 				set AppleScript's text item delimiters to space
