@@ -254,7 +254,7 @@ on parseReminder(q)
 		end try
 		
 		try
-		-- check for tomorrow x
+			-- check for tomorrow x
 			if (length of first word of q) is greater than 2 and "tomorrow" starts with first word of q then
 				set q to my middleText(q, 2, -1)
 				set theDate to ((current date) + days)
@@ -273,26 +273,48 @@ on parseReminder(q)
 		end try
 		
 		try
-		-- check for in x minutes y
+			-- check for in x minutes y
 			if theDate is "" and first word of q is "in" and Â
 				(third word of q is "minutes" or third word of q is "minute" or third word of q is "mins" or third word of q is "min") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + minutes * (my middleText(q, 2, 2)))
 				set valid to "yes"
-			-- check for in x days y
+				-- check for in x days y
 			else if theDate is "" and first word of q is "in" and Â
 				(third word of q is "days" or third word of q is "day") then
 				set theText to my middleText(q, 4, -1)
 				set theDate to ((current date) + days * (my middleText(q, 2, 2)))
-				-- check for x days y hours
 				try
+					-- check for in x days y hours
 					if (fifth word of q is "hours" or fifth word of q is "hour" or fifth word of q is "hr") then
 						set theText to my middleText(q, 6, -1)
 						set theDate to (theDate + hours * (my middleText(q, 4, 4)))
+						set valid to "yes"
+						-- check for in x days at {time} to y
+					else if fourth word of q is "at" then
+						set old_delims to AppleScript's text item delimiters
+						set AppleScript's text item delimiters to space
+						set theIndex to 0
+						set itemList to text items of q
+						repeat with i from 5 to the count of itemList
+							if item i of itemList is equal to "to" then set theIndex to i
+						end repeat
+						if theIndex is greater than 0 then
+							try
+								set theText to (items (theIndex + 1) thru -1 of itemList) as string
+								set theTimeStr to (items 5 thru (theIndex - 1) of itemList) as string
+								set (time of theDate) to time of (my convertTime(theTimeStr))
+								set valid to "yes"
+							on error
+								set valid to "no"
+							end try
+						end if
+						set AppleScript's text item delimiters to old_delims
 					end if
+				on error
+					set valid to "no"
 				end try
-				set valid to "yes"
-			-- check for in x hours y
+				-- check for in x hours y
 			else if theDate is "" and first word of q is "in" and Â
 				(third word of q is "hours" or third word of q is "hour" or third word of q is "hr") then
 				set theText to my middleText(q, 4, -1)

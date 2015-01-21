@@ -5,7 +5,7 @@ This creates a new reminder in reminders.app
 
 Download the latest version -> http://bit.ly/10uCE2J
 
-More information and additional notes and tips at http://www.alfredforum.com/topic/917-reminders/
+More information at http://www.alfredforum.com/topic/917-reminders/
  
 To use, just type "r reminder_text" into Alfred. E.g. "r check out some of Alfred's other workflows" to find an existing reminder with the search text, or to create a new one.
 Actioning an existing reminder marks it as complete.

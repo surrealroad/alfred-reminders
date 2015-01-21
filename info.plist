@@ -4,6 +4,8 @@
 <dict>
 	<key>bundleid</key>
 	<string>com.surrealroad.alfred-reminder</string>
+	<key>category</key>
+	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
 		<key>357C3151-39E1-42FD-8726-BBB740E0976C</key>
@@ -215,7 +217,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 56
+property currentVersion : 58
 property workflowFolder : do shell script "pwd"
 property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
@@ -224,9 +226,9 @@ property wfname : "Reminders"
 property bundleid : "com.surrealroad.alfred-reminder"property uid : "add-reminder"property addActionTitle : "Add Reminder"property cacheFile : "cache.plist"
 
 set wf to wf's new_workflow_with_bundle(bundleid)
-set workflowFolder of lib to workflowFolder
-set osver to system version of (system info)
-if (osver contains "10.9" or osver contains "10.10") then set showReminders to falsemy alfred_script("{query}")on alfred_script(q)	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
+set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
+	set osver to system version of (system info)
+	if (osver contains "10.9" or osver contains "10.10") then set showReminders to false	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
 	if q is "" and showReminders then set q to "all"	-- set create reminder action	set theText to ""
 	set theDate to ""
 	set thePriority to ""
@@ -581,6 +583,7 @@ r tomorrow bring about financial ruin upon my enemies
 r in 5 minutes drop everything
 r in 2 hours laugh out loud in random thoughts list
 r in 3 days 1 hour pick stuff up off the floor
+r in 1 day at 2pm to run amok
 r on 24/12/13 to forget everything I know about things in movies
 r on 12 June 15 to come up with some interesting ideas
 r on 11 12 13 to check what the weather's like
@@ -605,6 +608,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Wednesday, 21 January 2015 – added pattern “r in {x} days at {time} to {something}” 
 Wednesday, 12 November 2014 – rtest will no longer test reminder caching on OS 10.9+
 Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”; the priority of the reminder can now be specified by “ !” at the end of the query, “ !1”,“ !2”,“ !3” each with increasing priorities
 Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10
