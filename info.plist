@@ -150,6 +150,8 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
@@ -209,6 +211,14 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 				<integer>4</integer>
 				<key>keyword</key>
 				<string>r</string>
+				<key>queuedelaycustom</key>
+				<integer>1</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
 				<key>runningsubtext</key>
 				<string>Processing request…</string>
 				<key>script</key>
@@ -228,7 +238,7 @@ property bundleid : "com.surrealroad.alfred-reminder"property uid : "add-remind
 set wf to wf's new_workflow_with_bundle(bundleid)
 set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
 	set osver to system version of (system info)
-	if (osver contains "10.9" or osver contains "10.10") then set showReminders to false	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
+	if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then set showReminders to false	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
 	if q is "" and showReminders then set q to "all"	-- set create reminder action	set theText to ""
 	set theDate to ""
 	set thePriority to ""
@@ -259,6 +269,8 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
@@ -289,6 +301,14 @@ on alfred_script(q)	return lib's actionReminderQuery(q, true, applib, wf, cache
 				<integer>4</integer>
 				<key>keyword</key>
 				<string>radd</string>
+				<key>queuedelaycustom</key>
+				<integer>1</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
 				<key>runningsubtext</key>
 				<string>Processing request…</string>
 				<key>script</key>
@@ -336,13 +356,21 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 				<integer>4</integer>
 				<key>keyword</key>
 				<string>rshow</string>
+				<key>queuedelaycustom</key>
+				<integer>1</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
 				<key>runningsubtext</key>
 				<string>Fetching reminders…</string>
 				<key>script</key>
 				<string>property cacheExpires : 2 * hoursproperty workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")property wfname : "Reminders"property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
 property showReminders : trueset wf to wf's new_workflow_with_bundle(bundleid)set workflowFolder of lib to workflowFolder
 set osver to system version of (system info)
-if (osver contains "10.9" or osver contains "10.10") then set showReminders to falseif showReminders then my alfred_script("{query}")on alfred_script(q)
+if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then set showReminders to falseif showReminders then my alfred_script("{query}")on alfred_script(q)
 	set theText to ""
 	set theDate to ""
 	set theList to ""
@@ -370,6 +398,8 @@ if (osver contains "10.9" or osver contains "10.10") then set showReminders to f
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
@@ -419,6 +449,8 @@ on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, 
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
@@ -452,7 +484,7 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; returnset theResult to theResult &amp; "Fetch reminder list info: "
 set testStart to (current date)try	set reminderList to missing value	tell application id "com.apple.reminders"		set reminderList to name of first list	end tell	if reminderList is not missing value then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test fetching cached variablesset theResult to theResult &amp; "Run cache process: "
-set osver to system version of (system info)if osver contains "10.9" or osver contains "10.10" then	set cache to falseelse	set cache to trueend if
+set osver to system version of (system info)if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then	set cache to falseelse	set cache to trueend if
 set testStart to (current date)if cache then	try		set cacheResult to do shell script "osascript " &amp; quoted form of workflowFolder &amp; "/cache-reminders.scpt"		if cacheResult is "" then			set theResult to theResult &amp; "OK"		else			set theResult to theResult &amp; cacheResult		end if	on error errMsg		set theResult to theResult &amp; "ERROR: " &amp; errMsg	end try
 else
 	set theResult to theResult &amp; "SKIPPED"

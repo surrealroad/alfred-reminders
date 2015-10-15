@@ -34,7 +34,7 @@ on run
 	set existingReminders to {}
 	set didTimeout to false
 	set osver to system version of (system info)
-	if osver contains "10.9" or osver contains "10.10" then
+	if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then
 		set theTimeout to 600 --1000
 	else
 		set theTimeout to 100
