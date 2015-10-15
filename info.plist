@@ -227,7 +227,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 58
+property currentVersion : 59
 property workflowFolder : do shell script "pwd"
 property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
