@@ -640,6 +640,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Thursday, 15 October 2015 – fix for OS 10.11 El Capitan
 Wednesday, 21 January 2015 – added pattern “r in {x} days at {time} to {something}” 
 Wednesday, 12 November 2014 – rtest will no longer test reminder caching on OS 10.9+
 Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”; the priority of the reminder can now be specified by “ !” at the end of the query, “ !1”,“ !2”,“ !3” each with increasing priorities
