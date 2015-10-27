@@ -227,7 +227,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 59
+property currentVersion : 60
 property workflowFolder : do shell script "pwd"
 property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
@@ -640,6 +640,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Tuesday, 27 October 2015 - fix for reminders not closing after adding a new reminder
 Thursday, 15 October 2015 – fix for OS 10.11 El Capitan
 Wednesday, 21 January 2015 – added pattern “r in {x} days at {time} to {something}” 
 Wednesday, 12 November 2014 – rtest will no longer test reminder caching on OS 10.9+

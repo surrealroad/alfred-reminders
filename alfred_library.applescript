@@ -63,9 +63,9 @@ on setRemindersActive()
 		set remindersIsRunning to (bundle identifier of processes) contains "com.apple.reminders"
 	end tell
 	if remindersIsRunning then
-		set closeReminders to false
+		set my closeReminders to false
 	else
-		set closeReminders to true
+		set my closeReminders to true
 	end if
 end setRemindersActive
 
@@ -519,6 +519,8 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 				if shouldOpen then
 					activate
 					show theReminder
+				else if my closeReminders then
+					quit
 				end if
 			end using terms from
 		end tell
