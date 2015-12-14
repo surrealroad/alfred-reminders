@@ -155,18 +155,27 @@
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
-				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+				<string>property reminderList : ""
+property workflowFolder : do shell script "pwd"
+property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
 property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
-property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
+property bundleid : "com.surrealroad.alfred-reminder"
+property cacheFile : "cache.plist"
 
 set wf to wf's new_workflow_with_bundle(bundleid)
-set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
+set workflowFolder of lib to workflowFolder
+
+my alfred_script("{query}")
+
+on alfred_script(q)
 	if q is "@@UPDATE@@" then
 		open location lib's getVersionURL(bundleid)
 		return 
 	end
-	lib's setRemindersActive()	return lib's actionReminderQuery(q, false, applib, wf, cacheFile, reminderList)end alfred_script</string>
+	lib's setRemindersActive()
+	return lib's actionReminderQuery(q, false, applib, wf, cacheFile, reminderList)
+end alfred_script</string>
 				<key>type</key>
 				<integer>6</integer>
 			</dict>
@@ -229,27 +238,79 @@ property showReminders : true
 
 property currentVersion : 60
 property workflowFolder : do shell script "pwd"
-property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+
+property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
 property wfname : "Reminders"
-property bundleid : "com.surrealroad.alfred-reminder"property uid : "add-reminder"property addActionTitle : "Add Reminder"property cacheFile : "cache.plist"
+property bundleid : "com.surrealroad.alfred-reminder"
+property uid : "add-reminder"
+property addActionTitle : "Add Reminder"
+property cacheFile : "cache.plist"
 
 set wf to wf's new_workflow_with_bundle(bundleid)
-set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
+set workflowFolder of lib to workflowFolder
+
+my alfred_script("{query}")
+
+on alfred_script(q)
 	set osver to system version of (system info)
-	if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then set showReminders to false	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
-	if q is "" and showReminders then set q to "all"	-- set create reminder action	set theText to ""
+	-- if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then set showReminders to false
+	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
+	if q is "" and showReminders then set q to "all"
+	-- set create reminder action
+	set theText to ""
 	set theDate to ""
 	set thePriority to ""
 	set theList to ""
 	set theApplication to ""
-	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder
-		set thePriority to thePriority of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)	end if		if theApplication is "" and showReminders then		if q is "refresh" then lib's spawnReminderCache(workflowFolder &amp; "/cache-reminders.scpt", false, "")		--fetch existing reminders		set reminderList to {}		set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)		set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	else		set filteredReminders to {}	end if		--version check
-	set versionAction to ""	if shouldCheckForUpdates then		set cacheFile of update to cacheFile		set workflowFolder of update to (workflowFolder as string)		try			set versionAction to lib's alfred_version_notify(wfname, bundleid, currentVersion, wf, cacheFile, checkFrequency)		end try	end if
+	set theIcon to ""
+	set valid to "no"
+	lib's setRemindersActive()
+	try
+		set reminder to lib's parseReminder(q)
+		set theText to theText of reminder
+		set theDate to theDate of reminder
+		set thePriority to thePriority of reminder
+		set valid to valid of reminder
+		set theList to theList of reminder
+		set theApplication to theApplication of reminder
+		set theIcon to theIcon of reminder
+	end try
+	
+	set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)
+	
+	set addAction to ""
+	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then
+		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)
+	end if
+	
+	if theApplication is "" and showReminders then
+		if q is "refresh" then lib's spawnReminderCache(workflowFolder &amp; "/cache-reminders.scpt", false, "")
+		--fetch existing reminders
+		set reminderList to {}
+		set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)
+		set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)
+	else
+		set filteredReminders to {}
+	end if
+	
+	--version check
+	set versionAction to ""
+	if shouldCheckForUpdates then
+		set cacheFile of update to cacheFile
+		set workflowFolder of update to (workflowFolder as string)
+		try
+			set versionAction to lib's alfred_version_notify(wfname, bundleid, currentVersion, wf, cacheFile, checkFrequency)
+		end try
+	end if
 	
 	if ((addAction is "") and (filteredReminders is {})) then
-		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Reminder command not recognised or no matching reminders found", "Type r help for some examples", "", "no", theIcon)})	end if		return lib's alfred_result_items({versionAction, addAction, filteredReminders})end alfred_script</string>
+		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Reminder command not recognised or no matching reminders found", "Type r help for some examples", "", "no", theIcon)})
+	end if
+	
+	return lib's alfred_result_items({versionAction, addAction, filteredReminders})
+end alfred_script</string>
 				<key>subtext</key>
 				<string>Adds an entry to Reminders.app</string>
 				<key>title</key>
@@ -274,14 +335,21 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
-				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+				<string>property reminderList : ""
+property workflowFolder : do shell script "pwd"
+property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
 property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
-property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
+property bundleid : "com.surrealroad.alfred-reminder"
+property cacheFile : "cache.plist"
 
-set wf to wf's new_workflow_with_bundle(bundleid)my alfred_script("{query}")
+set wf to wf's new_workflow_with_bundle(bundleid)
 
-on alfred_script(q)	return lib's actionReminderQuery(q, true, applib, wf, cacheFile, reminderList)end alfred_script</string>
+my alfred_script("{query}")
+
+on alfred_script(q)
+	return lib's actionReminderQuery(q, true, applib, wf, cacheFile, reminderList)
+end alfred_script</string>
 				<key>type</key>
 				<integer>6</integer>
 			</dict>
@@ -314,23 +382,54 @@ on alfred_script(q)	return lib's actionReminderQuery(q, true, applib, wf, cache
 				<key>script</key>
 				<string>property cacheExpires : 2 * hours
 
-property workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property workflowFolder : do shell script "pwd"
+property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property wfname : "Reminders"
-property bundleid : "com.surrealroad.alfred-reminder"property uid : "add-reminder"property addActionTitle : "Add Reminder"property cacheFile : "cache.plist"
+property bundleid : "com.surrealroad.alfred-reminder"
+property uid : "add-reminder"
+property addActionTitle : "Add Reminder"
+property cacheFile : "cache.plist"
 
 set wf to wf's new_workflow_with_bundle(bundleid)
-set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)	-- set create reminder action	set theText to ""
+set workflowFolder of lib to workflowFolder
+
+my alfred_script("{query}")
+
+on alfred_script(q)
+	-- set create reminder action
+	set theText to ""
 	set theDate to ""
 	set thePriority to ""
 	set theList to ""
 	set theApplication to ""
-	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder
-		set thePriority to thePriority of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)
+	set theIcon to ""
+	set valid to "no"
+	lib's setRemindersActive()
+	try
+		set reminder to lib's parseReminder(q)
+		set theText to theText of reminder
+		set theDate to theDate of reminder
+		set thePriority to thePriority of reminder
+		set valid to valid of reminder
+		set theList to theList of reminder
+		set theApplication to theApplication of reminder
+		set theIcon to theIcon of reminder
+	end try
+	
+	set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)
+	
+	set addAction to ""
+	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then
+		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)
 	end if
 	
 	if addAction is "" then
-		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Add reminder command not recognised", "Type r help for some examples", "", "no", theIcon)})	end if		return lib's alfred_result_items({addAction})end alfred_script</string>
+		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Add reminder command not recognised", "Type r help for some examples", "", "no", theIcon)})
+	end if
+	
+	return lib's alfred_result_items({addAction})
+end alfred_script</string>
 				<key>subtext</key>
 				<string>Adds an entry to Reminders.app</string>
 				<key>title</key>
@@ -367,18 +466,51 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 				<key>runningsubtext</key>
 				<string>Fetching reminders…</string>
 				<key>script</key>
-				<string>property cacheExpires : 2 * hoursproperty workflowFolder : do shell script "pwd"property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")property wfname : "Reminders"property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
-property showReminders : trueset wf to wf's new_workflow_with_bundle(bundleid)set workflowFolder of lib to workflowFolder
+				<string>property cacheExpires : 2 * hours
+
+property workflowFolder : do shell script "pwd"
+property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
+property wfname : "Reminders"
+property bundleid : "com.surrealroad.alfred-reminder"
+property cacheFile : "cache.plist"
+property showReminders : true
+
+set wf to wf's new_workflow_with_bundle(bundleid)
+set workflowFolder of lib to workflowFolder
 set osver to system version of (system info)
-if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then set showReminders to falseif showReminders then my alfred_script("{query}")on alfred_script(q)
+-- if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then set showReminders to false
+
+if showReminders then my alfred_script("{query}")
+
+on alfred_script(q)
 	set theText to ""
 	set theDate to ""
 	set theList to ""
 	set theApplication to ""
-	set theIcon to ""	set valid to "no"	lib's setRemindersActive()
-	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theIcon to theIcon of reminder	end try		--fetch existing reminders	set reminderList to {}	set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)	set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	
+	set theIcon to ""
+	set valid to "no"
+	lib's setRemindersActive()
+	try
+		set reminder to lib's parseReminder(q)
+		set theText to theText of reminder
+		set theDate to theDate of reminder
+		set valid to valid of reminder
+		set theList to theList of reminder
+		set theIcon to theIcon of reminder
+	end try
+	
+	--fetch existing reminders
+	set reminderList to {}
+	set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)
+	set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)
+	
 	if filteredReminders is {} then
-		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "No matching reminders found", "Please try a different query", "", "no", theIcon)})	end if		return lib's alfred_result_items({filteredReminders})end alfred_script</string>
+		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "No matching reminders found", "Please try a different query", "", "no", theIcon)})
+	end if
+	
+	return lib's alfred_result_items({filteredReminders})
+end alfred_script</string>
 				<key>subtext</key>
 				<string>Show current reminders</string>
 				<key>title</key>
@@ -403,14 +535,21 @@ if (osver does not start with "10.6" and osver does not start with "10.7" and os
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
-				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+				<string>property reminderList : ""
+property workflowFolder : do shell script "pwd"
+property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
 property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
-property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
+property bundleid : "com.surrealroad.alfred-reminder"
+property cacheFile : "cache.plist"
 
-set wf to wf's new_workflow_with_bundle(bundleid)my alfred_script("{query}")
+set wf to wf's new_workflow_with_bundle(bundleid)
 
-on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, applib, wf, cacheFile, reminderList)end alfred_script</string>
+my alfred_script("{query}")
+
+on alfred_script(q)
+	return lib's actionReminderQuery("##DEL##" &amp; q, false, applib, wf, cacheFile, reminderList)
+end alfred_script</string>
 				<key>type</key>
 				<integer>6</integer>
 			</dict>
@@ -454,106 +593,560 @@ on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, 
 				<key>escaping</key>
 				<integer>4</integer>
 				<key>script</key>
-				<string>property cacheExpires : 2 * hoursproperty workflowFolder : missing valueproperty lib : missing valueproperty wf : missing valueproperty update : missing valueproperty cacheFile : "cache.plist"property bundleid : "com.surrealroad.alfred-reminder"property wfname : "Reminders"set theResult to ""set startTime to (current date)-- OS versionset theResult to theResult &amp; "OS version: "
-set testStart to (current date)try	set os_version to do shell script "sw_vers -productVersion"	set theResult to theResult &amp; os_versionon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- timestampset theResult to theResult &amp; "Current date: "
-set testStart to (current date)try	set theResult to theResult &amp; (current date)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend tryset theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- initialise librariesset theResult to theResult &amp; "Initialize workflow path: "
-set testStart to (current date)try	set workflowFolder to do shell script "pwd"	set theResult to theResult &amp; workflowFolderon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Initialize alfred-library: "set testStart to (current date)try	set lib to load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")	if lib is not missing value then		set workflowFolder of lib to workflowFolder		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+				<string>property cacheExpires : 2 * hours
+property workflowFolder : missing value
+property lib : missing value
+property wf : missing value
+property update : missing value
+property cacheFile : "cache.plist"
+property bundleid : "com.surrealroad.alfred-reminder"
+property wfname : "Reminders"
+
+
+set theResult to ""
+set startTime to (current date)
+
+-- OS version
+set theResult to theResult &amp; "OS version: "
+set testStart to (current date)
+try
+	set os_version to do shell script "sw_vers -productVersion"
+	set theResult to theResult &amp; os_version
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
 
-set theResult to theResult &amp; "Initialize update-library: "
-set testStart to (current date)try	set update to load script POSIX file (workflowFolder &amp; "/cache-update.scpt")	if update is not missing value then		set cacheFile of update to cacheFile		set workflowFolder of update to workflowFolder		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+-- timestamp
+set theResult to theResult &amp; "Current date: "
+set testStart to (current date)
+try
+	set theResult to theResult &amp; (current date)
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Initialize wf-library: "
-set testStart to (current date)try	set wf to load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")	set wf to wf's new_workflow_with_bundle(bundleid)	if wf is not missing value then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+-- initialise libraries
+set theResult to theResult &amp; "Initialize workflow path: "
+set testStart to (current date)
+try
+	set workflowFolder to do shell script "pwd"
+	set theResult to theResult &amp; workflowFolder
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Initialize alfred-library: "
+set testStart to (current date)
+try
+	set lib to load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+	if lib is not missing value then
+		set workflowFolder of lib to workflowFolder
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+
+set theResult to theResult &amp; "Initialize update-library: "
+set testStart to (current date)
+try
+	set update to load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
+	if update is not missing value then
+		set cacheFile of update to cacheFile
+		set workflowFolder of update to workflowFolder
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Initialize wf-library: "
+set testStart to (current date)
+try
+	set wf to load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
+	set wf to wf's new_workflow_with_bundle(bundleid)
+	if wf is not missing value then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
 
 set theResult to theResult &amp; "Initialize plist-library: "
-set testStart to (current date)try	set _plist to load script POSIX file (workflowFolder &amp; "/_plist.scpt")	if _plist is not missing value then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test determining reminders stateset theResult to theResult &amp; "Reminders.app state: "
-set testStart to (current date)try	tell application "System Events"		set remindersIsRunning to (bundle identifier of processes) contains "com.apple.reminders"	end tell	if remindersIsRunning then		set theResult to theResult &amp; "Running"	else		set theResult to theResult &amp; "Not running"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test reading data from remindersset theResult to theResult &amp; "Fetch reminder count: "
-set testStart to (current date)try	tell application id "com.apple.reminders"		set reminderList to reminders whose (completed is false)	end tell	set theResult to theResult &amp; (count of reminderList)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Fetch reminder info: "
-set testStart to (current date)try	set reminderText to missing value	tell application id "com.apple.reminders"		set reminderText to name of first reminder whose (completed is false)	end tell	if reminderText is not missing value then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Fetch reminder list count: "set testStart to (current date)try	tell application id "com.apple.reminders"		set reminderListList to lists	end tell	set theResult to theResult &amp; (count of reminderListList)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; returnset theResult to theResult &amp; "Fetch reminder list info: "
-set testStart to (current date)try	set reminderList to missing value	tell application id "com.apple.reminders"		set reminderList to name of first list	end tell	if reminderList is not missing value then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test fetching cached variablesset theResult to theResult &amp; "Run cache process: "
-set osver to system version of (system info)if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then	set cache to falseelse	set cache to trueend if
-set testStart to (current date)if cache then	try		set cacheResult to do shell script "osascript " &amp; quoted form of workflowFolder &amp; "/cache-reminders.scpt"		if cacheResult is "" then			set theResult to theResult &amp; "OK"		else			set theResult to theResult &amp; cacheResult		end if	on error errMsg		set theResult to theResult &amp; "ERROR: " &amp; errMsg	end try
-else
-	set theResult to theResult &amp; "SKIPPED"
-end if
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Fetch cache timestamp: "
 set testStart to (current date)
-if cache then	try		set theResult to theResult &amp; wf's get_value("timestamp", cacheFile)	on error errMsg		set theResult to theResult &amp; "ERROR: " &amp; errMsg	end try
-else
-	set theResult to theResult &amp; "SKIPPED"
-end if
+try
+	set _plist to load script POSIX file (workflowFolder &amp; "/_plist.scpt")
+	if _plist is not missing value then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Fetch cached reminder count: "
+
+-- test determining reminders state
+set theResult to theResult &amp; "Reminders.app state: "
 set testStart to (current date)
-if cache then	try		set cachedReminderList to lib's getCachedReminderList(wf, cacheFile)		set theResult to theResult &amp; (count of cachedReminderList)	on error errMsg		set theResult to theResult &amp; "ERROR: " &amp; errMsg	end try
+try
+	tell application "System Events"
+		set remindersIsRunning to (bundle identifier of processes) contains "com.apple.reminders"
+	end tell
+	if remindersIsRunning then
+		set theResult to theResult &amp; "Running"
+	else
+		set theResult to theResult &amp; "Not running"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+-- test reading data from reminders
+set theResult to theResult &amp; "Fetch reminder count: "
+set testStart to (current date)
+try
+	tell application id "com.apple.reminders"
+		set reminderList to reminders whose (completed is false)
+	end tell
+	set theResult to theResult &amp; (count of reminderList)
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Fetch reminder info: "
+set testStart to (current date)
+try
+	set reminderText to missing value
+	tell application id "com.apple.reminders"
+		set reminderText to name of first reminder whose (completed is false)
+	end tell
+	if reminderText is not missing value then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Fetch reminder list count: "
+set testStart to (current date)
+try
+	tell application id "com.apple.reminders"
+		set reminderListList to lists
+	end tell
+	set theResult to theResult &amp; (count of reminderListList)
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Fetch reminder list info: "
+set testStart to (current date)
+try
+	set reminderList to missing value
+	tell application id "com.apple.reminders"
+		set reminderList to name of first list
+	end tell
+	if reminderList is not missing value then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+-- test fetching cached variables
+set theResult to theResult &amp; "Run cache process: "
+set osver to system version of (system info)
+--if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then
+--	set cache to false
+--else
+	set cache to true
+--end if
+set testStart to (current date)
+if cache then
+	try
+		set cacheResult to do shell script "osascript " &amp; quoted form of workflowFolder &amp; "/cache-reminders.scpt"
+		if cacheResult is "" then
+			set theResult to theResult &amp; "OK"
+		else
+			set theResult to theResult &amp; cacheResult
+		end if
+	on error errMsg
+		set theResult to theResult &amp; "ERROR: " &amp; errMsg
+	end try
 else
 	set theResult to theResult &amp; "SKIPPED"
 end if
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test parseReminder suiteset theResult to theResult &amp; "Test basic query: "
-set testStart to (current date)try	set q to "something"	set qResult to lib's parseReminder(q)	if (theText of qResult) is equal to q then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test today query: "
-set testStart to (current date)try	set q to "today"	set qResult to lib's parseReminder(q)	if date string of (theDate of qResult) is equal to date string of (current date) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Fetch cache timestamp: "
+set testStart to (current date)
+if cache then
+	try
+		set theResult to theResult &amp; wf's get_value("timestamp", cacheFile)
+	on error errMsg
+		set theResult to theResult &amp; "ERROR: " &amp; errMsg
+	end try
+else
+	set theResult to theResult &amp; "SKIPPED"
+end if
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test in n minutes query: "
-set testStart to (current date)try	set q to "in 5 minutes something"	set qResult to lib's parseReminder(q)	if (theDate of qResult) is equal to ((current date) + 5 * minutes) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Fetch cached reminder count: "
+set testStart to (current date)
+if cache then
+	try
+		set cachedReminderList to lib's getCachedReminderList(wf, cacheFile)
+		set theResult to theResult &amp; (count of cachedReminderList)
+	on error errMsg
+		set theResult to theResult &amp; "ERROR: " &amp; errMsg
+	end try
+else
+	set theResult to theResult &amp; "SKIPPED"
+end if
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test in n hours query: "
-set testStart to (current date)try	set q to "in 5 hours something"	set qResult to lib's parseReminder(q)	if (theDate of qResult) is equal to ((current date) + 5 * hours) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+-- test parseReminder suite
+set theResult to theResult &amp; "Test basic query: "
+set testStart to (current date)
+try
+	set q to "something"
+	set qResult to lib's parseReminder(q)
+	if (theText of qResult) is equal to q then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test in n days query: "
-set testStart to (current date)try	set q to "in 5 days something"	set qResult to lib's parseReminder(q)	if (theDate of qResult) is equal to ((current date) + 5 * days) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test today query: "
+set testStart to (current date)
+try
+	set q to "today"
+	set qResult to lib's parseReminder(q)
+	if date string of (theDate of qResult) is equal to date string of (current date) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test in n days y hours query: "
-set testStart to (current date)try	set q to "in 5 days 1 hour something"	set qResult to lib's parseReminder(q)	if (theDate of qResult) is equal to ((current date) + (5 * days) + hours) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test in n minutes query: "
+set testStart to (current date)
+try
+	set q to "in 5 minutes something"
+	set qResult to lib's parseReminder(q)
+	if (theDate of qResult) is equal to ((current date) + 5 * minutes) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test in n hours y minutes query: "
-set testStart to (current date)try	set q to "in 5 hours 6 minutes something"	set qResult to lib's parseReminder(q)	if (theDate of qResult) is equal to ((current date) + (5 * hours) + (6 * minutes)) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test in n hours query: "
+set testStart to (current date)
+try
+	set q to "in 5 hours something"
+	set qResult to lib's parseReminder(q)
+	if (theDate of qResult) is equal to ((current date) + 5 * hours) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test at time query: "
-set testStart to (current date)try	set q to "at 2pm to something"	set qResult to lib's parseReminder(q)	set theTime to (current date)	set theTime's time to 14 * hours	if (time of (theDate of qResult)) is equal to (time of (theTime)) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test in n days query: "
+set testStart to (current date)
+try
+	set q to "in 5 days something"
+	set qResult to lib's parseReminder(q)
+	if (theDate of qResult) is equal to ((current date) + 5 * days) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test tomorrow at time query: "
-set testStart to (current date)try	set q to "tomorrow at 11am to something"	set qResult to lib's parseReminder(q)	set theTime to (current date)	set theTime's time to 11 * hours	if date string of (theDate of qResult) is equal to date string of ((current date) + 24 * hours) ¬		and (time of (theDate of qResult)) is equal to (time of (theTime)) then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test in n days y hours query: "
+set testStart to (current date)
+try
+	set q to "in 5 days 1 hour something"
+	set qResult to lib's parseReminder(q)
+	if (theDate of qResult) is equal to ((current date) + (5 * days) + hours) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test in x list query: "
-set testStart to (current date)try	set q to "in something in test result list"	set qResult to lib's parseReminder(q)	if (theList of qResult) is equal to "test result" then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test subtitle generationset theResult to theResult &amp; "Subtitle generation: "
-set testStart to (current date)try	set theText to "test"	set theDate to current date	set theList to "test list"	set theApplication to ""
-	set thePriority to "9"	set expectedResult to "Create a new reminder to test on " &amp; (theDate as string) &amp; " in " &amp; quoted form of theList &amp; " (low priority)"	set qResult to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)	if qResult is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test reminder filteringset theResult to theResult &amp; "Test basic reminder filtering: "
-set testStart to (current date)try	set theUID to "test"	set theText to "something"	set theDate to ""	set theList to ""	set theReminder to {uid:theUID, title:theText, creationdate:(current date)}	set reminderList to {theReminder}	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)	if first item of filteredReminders is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test in n hours y minutes query: "
+set testStart to (current date)
+try
+	set q to "in 5 hours 6 minutes something"
+	set qResult to lib's parseReminder(q)
+	if (theDate of qResult) is equal to ((current date) + (5 * hours) + (6 * minutes)) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test remind today reminder filtering: "
-set testStart to (current date)try	set theUID to "test"	set theText to "something"	set theDate to (current date)	set theList to ""	set theReminder to {uid:theUID, title:theText, creationdate:(current date), reminddate:theDate}	set reminderList to {theReminder}	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)	if first item of filteredReminders is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test at time query: "
+set testStart to (current date)
+try
+	set q to "at 2pm to something"
+	set qResult to lib's parseReminder(q)
+	set theTime to (current date)
+	set theTime's time to 14 * hours
+	if (time of (theDate of qResult)) is equal to (time of (theTime)) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test due tomorrow reminder filtering: "
-set testStart to (current date)try	set theUID to "test"	set theText to "something"	set theDate to (current date) + 24 * hours	set theList to ""	set theReminder to {uid:theUID, title:theText, creationdate:(current date), duedate:theDate}	set reminderList to {theReminder}	set infoText to ((" (due on " &amp; theDate as string) &amp; ", started on " &amp; (current date) as string) &amp; ")"	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)	if first item of filteredReminders is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail" &amp; return				set theResult to theResult &amp; first item of filteredReminders &amp; return		set theResult to theResult &amp; expectedResult	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test tomorrow at time query: "
+set testStart to (current date)
+try
+	set q to "tomorrow at 11am to something"
+	set qResult to lib's parseReminder(q)
+	set theTime to (current date)
+	set theTime's time to 11 * hours
+	if date string of (theDate of qResult) is equal to date string of ((current date) + 24 * hours) ¬
+		and (time of (theDate of qResult)) is equal to (time of (theTime)) then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Test reminder list filtering: "
-set testStart to (current date)try	set theUID to "test"	set theText to "something"	set theDate to ""	set theList to "test list"	set theReminder to {uid:theUID, title:theText, creationdate:(current date), parentlist:theList}	set reminderList to {theReminder}	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)	if first item of filteredReminders is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test application-- test update checkingset theResult to theResult &amp; "Test version-check response: "
-set testStart to (current date)try	set verCheck to lib's alfred_version_notify(wfname, bundleid, 0, wf, cacheFile, 0)	if verCheck is not "" then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return-- test miscellaneous functionsset theResult to theResult &amp; "Current unix time: "
-set testStart to (current date)try	set theResult to theResult &amp; lib's unixtime(current date)on error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
+
+set theResult to theResult &amp; "Test in x list query: "
+set testStart to (current date)
+try
+	set q to "in something in test result list"
+	set qResult to lib's parseReminder(q)
+	if (theList of qResult) is equal to "test result" then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
-set theResult to theResult &amp; "Simple JSON: "
-set testStart to (current date)try	set expectedResult to {"version", "2"}	if lib's splitByColon("version:  2") is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
-set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return--stop timerset theResult to theResult &amp; "Test execution time: "set theResult to theResult &amp; ((current date) - startTime) &amp; " seconds" &amp; returnreturn theResult</string>
+
+-- test subtitle generation
+set theResult to theResult &amp; "Subtitle generation: "
+set testStart to (current date)
+try
+	set theText to "test"
+	set theDate to current date
+	set theList to "test list"
+	set theApplication to ""
+	set thePriority to "9"
+	set expectedResult to "Create a new reminder to test on " &amp; (theDate as string) &amp; " in " &amp; quoted form of theList &amp; " (low priority)"
+	set qResult to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)
+	if qResult is equal to expectedResult then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+-- test reminder filtering
+set theResult to theResult &amp; "Test basic reminder filtering: "
+set testStart to (current date)
+try
+	set theUID to "test"
+	set theText to "something"
+	set theDate to ""
+	set theList to ""
+	set theReminder to {uid:theUID, title:theText, creationdate:(current date)}
+	set reminderList to {theReminder}
+	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"
+	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬
+		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")
+	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)
+	if first item of filteredReminders is equal to expectedResult then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Test remind today reminder filtering: "
+set testStart to (current date)
+try
+	set theUID to "test"
+	set theText to "something"
+	set theDate to (current date)
+	set theList to ""
+	set theReminder to {uid:theUID, title:theText, creationdate:(current date), reminddate:theDate}
+	set reminderList to {theReminder}
+	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"
+	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬
+		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")
+	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)
+	if first item of filteredReminders is equal to expectedResult then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Test due tomorrow reminder filtering: "
+set testStart to (current date)
+try
+	set theUID to "test"
+	set theText to "something"
+	set theDate to (current date) + 24 * hours
+	set theList to ""
+	set theReminder to {uid:theUID, title:theText, creationdate:(current date), duedate:theDate}
+	set reminderList to {theReminder}
+	set infoText to ((" (due on " &amp; theDate as string) &amp; ", started on " &amp; (current date) as string) &amp; ")"
+	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬
+		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")
+	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)
+	if first item of filteredReminders is equal to expectedResult then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail" &amp; return
+		
+		set theResult to theResult &amp; first item of filteredReminders &amp; return
+		set theResult to theResult &amp; expectedResult
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Test reminder list filtering: "
+set testStart to (current date)
+try
+	set theUID to "test"
+	set theText to "something"
+	set theDate to ""
+	set theList to "test list"
+	set theReminder to {uid:theUID, title:theText, creationdate:(current date), parentlist:theList}
+	set reminderList to {theReminder}
+	set infoText to (" (started on " &amp; (current date) as string) &amp; ")"
+	set expectedResult to lib's alfred_result_item_with_icon(theUID, theText, ¬
+		"Set as complete" &amp; infoText, "uid:" &amp; theUID, "yes", "checked.png")
+	set filteredReminders to lib's filterReminders(reminderList, theText, theDate, theList)
+	if first item of filteredReminders is equal to expectedResult then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+-- test application
+
+-- test update checking
+set theResult to theResult &amp; "Test version-check response: "
+set testStart to (current date)
+try
+	set verCheck to lib's alfred_version_notify(wfname, bundleid, 0, wf, cacheFile, 0)
+	if verCheck is not "" then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+-- test miscellaneous functions
+set theResult to theResult &amp; "Current unix time: "
+set testStart to (current date)
+try
+	set theResult to theResult &amp; lib's unixtime(current date)
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+set theResult to theResult &amp; "Simple JSON: "
+set testStart to (current date)
+try
+	set expectedResult to {"version", "2"}
+	if lib's splitByColon("version:  2") is equal to expectedResult then
+		set theResult to theResult &amp; "OK"
+	else
+		set theResult to theResult &amp; "Fail"
+	end if
+on error errMsg
+	set theResult to theResult &amp; "ERROR: " &amp; errMsg
+end try
+set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return
+
+--stop timer
+set theResult to theResult &amp; "Test execution time: "
+set theResult to theResult &amp; ((current date) - startTime) &amp; " seconds" &amp; return
+
+return theResult</string>
 				<key>type</key>
 				<integer>6</integer>
 			</dict>
