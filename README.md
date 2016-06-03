@@ -3,7 +3,9 @@ alfred-reminders
 
 This creates a new reminder in reminders.app
 
-Download the latest version -> http://bit.ly/10uCE2J
+Download the latest version, for Alfred v3 -> http://bit.ly/1UlcR8F
+
+For Alfred v2 -> http://bit.ly/10uCE2J
 
 More information at http://www.alfredforum.com/topic/917-reminders/
  
