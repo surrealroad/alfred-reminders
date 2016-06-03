@@ -63,9 +63,9 @@ on setRemindersActive()
 		set remindersIsRunning to (bundle identifier of processes) contains "com.apple.reminders"
 	end tell
 	if remindersIsRunning then
-		set my closeReminders to false
+		set closeReminders to false
 	else
-		set my closeReminders to true
+		set closeReminders to true
 	end if
 end setRemindersActive
 
@@ -519,8 +519,6 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 				if shouldOpen then
 					activate
 					show theReminder
-				else if my closeReminders then
-					quit
 				end if
 			end using terms from
 		end tell
@@ -592,9 +590,10 @@ on noteFromClipboard(q, notesFolder, notesAccount, wf, showNote)
 	if q is not "" then
 		set noteTitle to q
 	else
-		set noteTitle to first paragraph of (the clipboard as string)
+		set noteTitle to first paragraph of (the clipboard as Unicode text)
+		set theBody to noteHTMLText
 	end if
-	createNote(noteTitle, noteHTMLText, notesFolder, notesAccount, showNote)
+	createNote(noteTitle, theBody, notesFolder, notesAccount, showNote)
 	return noteTitle
 end noteFromClipboard
 

@@ -32,13 +32,13 @@ on new_workflow_with_bundle(bundleid)
 			if not my q_is_empty(bundleid) then
 				set my _bundle to bundleid
 			end if
-			set my _cache to (my _home) & "/Library/Caches/com.runningwithcrayons.Alfred-2/Workflow Data/" & (my _bundle) & "/"
-			set my _data to (my _home) & "/Library/Application Support/Alfred 2/Workflow Data/" & (my _bundle) & "/"
+			set my _cache to (my _home) & "/Library/Caches/com.runningwithcrayons.Alfred-3/Workflow Data/" & (my _bundle) & "/"
+			set my _data to (my _home) & "/Library/Application Support/Alfred 3/Workflow Data/" & (my _bundle) & "/"
 			if not my q_folder_exists(my _cache) then
-				do shell script "mkdir " & quoted form of (my _cache)
+				do shell script "mkdir -p " & quoted form of (my _cache)
 			end if
 			if not my q_folder_exists(my _data) then
-				do shell script "mkdir " & quoted form of (my _data)
+				do shell script "mkdir -p " & quoted form of (my _data)
 			end if
 			set my _results to {}
 			return me
