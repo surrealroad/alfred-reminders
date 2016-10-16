@@ -8,6 +8,17 @@
 	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
+		<key>04638A91-5F31-429F-9B43-E1073C8A1865</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>CCC5806C-91D1-4DCD-8E99-DC8656EFAB8E</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
 		<key>357C3151-39E1-42FD-8726-BBB740E0976C</key>
 		<array>
 			<dict>
@@ -17,8 +28,17 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
+			</dict>
+		</array>
+		<key>6D980C90-487D-4CB5-904F-78C737B9B448</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>04638A91-5F31-429F-9B43-E1073C8A1865</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
 			</dict>
 		</array>
 		<key>85F2415F-FAB1-457A-8FD6-AD14DEBFBC53</key>
@@ -30,8 +50,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 			<dict>
 				<key>destinationuid</key>
@@ -40,8 +58,6 @@
 				<integer>524288</integer>
 				<key>modifiersubtext</key>
 				<string>Show in Reminders.app</string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 			<dict>
 				<key>destinationuid</key>
@@ -50,8 +66,6 @@
 				<integer>262144</integer>
 				<key>modifiersubtext</key>
 				<string>Delete this reminder</string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>8A923D62-221E-4666-96C6-82F3B6F92834</key>
@@ -63,8 +77,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>9A786411-7C10-48D0-AD69-6E1E1DFB8F97</key>
@@ -76,8 +88,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>A4F33D33-8B88-4725-993E-821A9D0CF057</key>
@@ -89,8 +99,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 			<dict>
 				<key>destinationuid</key>
@@ -99,8 +107,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>A725F2F1-5A55-476A-9A26-E5B2BB71200E</key>
@@ -112,8 +118,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 			<dict>
 				<key>destinationuid</key>
@@ -122,8 +126,6 @@
 				<integer>524288</integer>
 				<key>modifiersubtext</key>
 				<string>Show in Reminders.app</string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 			<dict>
 				<key>destinationuid</key>
@@ -132,8 +134,6 @@
 				<integer>262144</integer>
 				<key>modifiersubtext</key>
 				<string>Delete this reminder</string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>F71B4F2D-63BD-4B35-AA18-C6DDAA5A5CD9</key>
@@ -145,8 +145,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>FD379784-5C4C-46D9-8D0A-36E768AF1321</key>
@@ -158,8 +156,6 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 	</dict>
@@ -170,69 +166,12 @@
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Reminders for Alfred 3</string>
+	<string>Reminders</string>
 	<key>objects</key>
 	<array>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>4</integer>
-				<key>script</key>
-				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
-property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
-property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
-property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
-
-set wf to wf's new_workflow_with_bundle(bundleid)
-set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
-	if q is "@@UPDATE@@" then
-		open location lib's getVersionURL(bundleid)
-		return 
-	end
-	lib's setRemindersActive()	return lib's actionReminderQuery(q, false, applib, wf, cacheFile, reminderList)end alfred_script</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>6</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>F71B4F2D-63BD-4B35-AA18-C6DDAA5A5CD9</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>lastpathcomponent</key>
-				<false/>
-				<key>onlyshowifquerypopulated</key>
-				<true/>
-				<key>removeextension</key>
-				<false/>
-				<key>text</key>
-				<string>{query}</string>
-				<key>title</key>
-				<string>Reminders</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.notification</string>
-			<key>uid</key>
-			<string>159A291E-3339-491E-8D3F-79091BE0319B</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>alfredfiltersresults</key>
-				<false/>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -255,7 +194,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 62
+property currentVersion : 61
 property workflowFolder : do shell script "pwd"
 property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
@@ -278,10 +217,6 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 	
 	if ((addAction is "") and (filteredReminders is {})) then
 		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Reminder command not recognised or no matching reminders found", "Type r help for some examples", "", "no", theIcon)})	end if		return lib's alfred_result_items({versionAction, addAction, filteredReminders})end alfred_script</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
 				<key>subtext</key>
 				<string>Adds an entry to Reminders.app</string>
 				<key>title</key>
@@ -296,7 +231,32 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 			<key>uid</key>
 			<string>A725F2F1-5A55-476A-9A26-E5B2BB71200E</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>output</key>
+				<integer>0</integer>
+				<key>removeextension</key>
+				<false/>
+				<key>sticky</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Reminders</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>159A291E-3339-491E-8D3F-79091BE0319B</string>
+			<key>version</key>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -311,28 +271,26 @@ property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.sc
 property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
 property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
 
-set wf to wf's new_workflow_with_bundle(bundleid)my alfred_script("{query}")
-
-on alfred_script(q)	return lib's actionReminderQuery(q, true, applib, wf, cacheFile, reminderList)end alfred_script</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
+set wf to wf's new_workflow_with_bundle(bundleid)
+set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
+	if q is "@@UPDATE@@" then
+		open location lib's getVersionURL(bundleid)
+		return 
+	end
+	lib's setRemindersActive()	return lib's actionReminderQuery(q, false, applib, wf, cacheFile, reminderList)end alfred_script</string>
 				<key>type</key>
 				<integer>6</integer>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>9A786411-7C10-48D0-AD69-6E1E1DFB8F97</string>
+			<string>F71B4F2D-63BD-4B35-AA18-C6DDAA5A5CD9</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>alfredfiltersresults</key>
-				<false/>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -369,10 +327,6 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 	
 	if addAction is "" then
 		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Add reminder command not recognised", "Type r help for some examples", "", "no", theIcon)})	end if		return lib's alfred_result_items({addAction})end alfred_script</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
 				<key>subtext</key>
 				<string>Adds an entry to Reminders.app</string>
 				<key>title</key>
@@ -387,13 +341,63 @@ set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alf
 			<key>uid</key>
 			<string>8A923D62-221E-4666-96C6-82F3B6F92834</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>alfredfiltersresults</key>
+				<key>concurrently</key>
 				<false/>
+				<key>escaping</key>
+				<integer>4</integer>
+				<key>script</key>
+				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
+property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
+property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
+
+set wf to wf's new_workflow_with_bundle(bundleid)my alfred_script("{query}")
+
+on alfred_script(q)	return lib's actionReminderQuery(q, true, applib, wf, cacheFile, reminderList)end alfred_script</string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>9A786411-7C10-48D0-AD69-6E1E1DFB8F97</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>4</integer>
+				<key>script</key>
+				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
+property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
+property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
+
+set wf to wf's new_workflow_with_bundle(bundleid)my alfred_script("{query}")
+
+on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, applib, wf, cacheFile, reminderList)end alfred_script</string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>FD379784-5C4C-46D9-8D0A-36E768AF1321</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -423,10 +427,6 @@ if (osver does not start with "10.6" and osver does not start with "10.7" and os
 	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder		set valid to valid of reminder		set theList to theList of reminder		set theIcon to theIcon of reminder	end try		--fetch existing reminders	set reminderList to {}	set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)	set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	
 	if filteredReminders is {} then
 		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "No matching reminders found", "Please try a different query", "", "no", theIcon)})	end if		return lib's alfred_result_items({filteredReminders})end alfred_script</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
 				<key>subtext</key>
 				<string>Show current reminders</string>
 				<key>title</key>
@@ -441,37 +441,7 @@ if (osver does not start with "10.6" and osver does not start with "10.7" and os
 			<key>uid</key>
 			<string>85F2415F-FAB1-457A-8FD6-AD14DEBFBC53</string>
 			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>4</integer>
-				<key>script</key>
-				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
-property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
-property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
-property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
-
-set wf to wf's new_workflow_with_bundle(bundleid)my alfred_script("{query}")
-
-on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, applib, wf, cacheFile, reminderList)end alfred_script</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>6</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>FD379784-5C4C-46D9-8D0A-36E768AF1321</string>
-			<key>version</key>
-			<integer>2</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -480,7 +450,11 @@ on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, 
 				<false/>
 				<key>onlyshowifquerypopulated</key>
 				<false/>
+				<key>output</key>
+				<integer>0</integer>
 				<key>removeextension</key>
+				<false/>
+				<key>sticky</key>
 				<false/>
 				<key>text</key>
 				<string>Results have been copied to the clipboard</string>
@@ -492,7 +466,28 @@ on alfred_script(q)	return lib's actionReminderQuery("##DEL##" &amp; q, false, 
 			<key>uid</key>
 			<string>09C6CC9D-C9FE-4B32-BB4D-8E53F5D41AE8</string>
 			<key>version</key>
-			<integer>1</integer>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>rtest</string>
+				<key>subtext</key>
+				<string>Run a series of tests and put the results on the clipboard</string>
+				<key>text</key>
+				<string>Test Reminders Workflow</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>357C3151-39E1-42FD-8726-BBB740E0976C</string>
+			<key>version</key>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -602,10 +597,6 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 set theResult to theResult &amp; "Simple JSON: "
 set testStart to (current date)try	set expectedResult to {"version", "2"}	if lib's splitByColon("version:  2") is equal to expectedResult then		set theResult to theResult &amp; "OK"	else		set theResult to theResult &amp; "Fail"	end ifon error errMsg	set theResult to theResult &amp; "ERROR: " &amp; errMsgend try
 set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; " seconds)" &amp; return--stop timerset theResult to theResult &amp; "Test execution time: "set theResult to theResult &amp; ((current date) - startTime) &amp; " seconds" &amp; returnreturn theResult</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
 				<key>type</key>
 				<integer>6</integer>
 			</dict>
@@ -614,28 +605,7 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 			<key>uid</key>
 			<string>A4F33D33-8B88-4725-993E-821A9D0CF057</string>
 			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>rtest</string>
-				<key>subtext</key>
-				<string>Run a series of tests and put the results on the clipboard</string>
-				<key>text</key>
-				<string>Test Reminders Workflow</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>357C3151-39E1-42FD-8726-BBB740E0976C</string>
-			<key>version</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -645,15 +615,134 @@ set theResult to theResult &amp; " (" &amp; ((current date) - testStart) &amp; "
 				<key>clipboardtext</key>
 				<string>Test results:
 {query}</string>
-				<key>transient</key>
-				<false/>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.output.clipboard</string>
 			<key>uid</key>
 			<string>94C011FF-2F31-415D-8811-A360D015D705</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>4</integer>
+				<key>script</key>
+				<string>property reminderList : ""property workflowFolder : do shell script "pwd"property lib: load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property applib: load script POSIX file (workflowFolder &amp; "/reminder_apps.scpt")
+property wf: load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
+property bundleid : "com.surrealroad.alfred-reminder"property cacheFile : "cache.plist"
+
+set wf to wf's new_workflow_with_bundle(bundleid)
+set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
+	if q is "@@UPDATE@@" then
+		open location lib's getVersionURL(bundleid)
+		return 
+	end
+	lib's setRemindersActive()	return lib's actionReminderQuery(q, false, applib, wf, cacheFile, reminderList)end alfred_script</string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>04638A91-5F31-429F-9B43-E1073C8A1865</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>4</integer>
+				<key>keyword</key>
+				<string>rstudy</string>
+				<key>queuedelaycustom</key>
+				<integer>1</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Processing request…</string>
+				<key>script</key>
+				<string>property cacheExpires : 2 * hours
+property shouldCheckForUpdates : true
+property checkFrequency : 4 * days
+property showReminders : true
+
+property currentVersion : 61
+property workflowFolder : do shell script "pwd"
+property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
+property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
+property update : load script POSIX file (workflowFolder &amp; "/cache-update.scpt")
+property wfname : "Reminders"
+property bundleid : "com.surrealroad.alfred-reminder"property uid : "add-reminder"property addActionTitle : "Add Reminder"property cacheFile : "cache.plist"
+
+set wf to wf's new_workflow_with_bundle(bundleid)
+set workflowFolder of lib to workflowFoldermy alfred_script("{query}")on alfred_script(q)
+	set osver to system version of (system info)
+	if (osver does not start with "10.6" and osver does not start with "10.7" and osver does not start with "10.8") then set showReminders to false	if q is "help" then return lib's alfred_result_items({lib's reminderHelp()})
+	if q is "" and showReminders then set q to "all"
+	-- set to Study with spaced repetition
+	set q to "Study " &amp; q	-- set create reminder action	set theText to ""
+	set theDate to ""
+	set thePriority to ""
+	set theList to ""
+	set theApplication to ""
+	set theIcon to ""	set valid to "no"	lib's setRemindersActive()	try		set reminder to lib's parseReminder(q)		set theText to theText of reminder		set theDate to theDate of reminder
+		set thePriority to thePriority of reminder		set valid to valid of reminder		set theList to theList of reminder		set theApplication to theApplication of reminder		set theIcon to theIcon of reminder	end try		set subtitle to lib's formatReminderSubtitle(theText, theDate, theList, theApplication, thePriority)		set addAction to ""	if ((theText is not "" and theText is not "all" and theText is not "refresh" and theText is not "overdue") or theApplication is not "") then		set addAction to lib's alfred_result_item_with_icon(uid, addActionTitle, subtitle, q, valid, theIcon)	end if		if theApplication is "" and showReminders then		if q is "refresh" then lib's spawnReminderCache(workflowFolder &amp; "/cache-reminders.scpt", false, "")		--fetch existing reminders		set reminderList to {}		set existingReminders to lib's fetchReminderList(wf, cacheFile, cacheExpires)		set filteredReminders to lib's filterReminders(existingReminders, theText, theDate, theList)	else		set filteredReminders to {}	end if		--version check
+	set versionAction to ""	if shouldCheckForUpdates then		set cacheFile of update to cacheFile		set workflowFolder of update to (workflowFolder as string)		try			set versionAction to lib's alfred_version_notify(wfname, bundleid, currentVersion, wf, cacheFile, checkFrequency)		end try	end if
+	
+	if ((addAction is "") and (filteredReminders is {})) then
+		return lib's alfred_result_items({lib's alfred_result_item_with_icon("reminder-invalid", "Reminder command not recognised or no matching reminders found", "Type r help for some examples", "", "no", theIcon)})	end if		return lib's alfred_result_items({versionAction, addAction, filteredReminders})end alfred_script</string>
+				<key>subtext</key>
+				<string>Adds an entry to Reminders.app</string>
+				<key>title</key>
+				<string>Add Reminder</string>
+				<key>type</key>
+				<integer>6</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>6D980C90-487D-4CB5-904F-78C737B9B448</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>output</key>
+				<integer>0</integer>
+				<key>removeextension</key>
+				<false/>
+				<key>sticky</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Reminders</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>CCC5806C-91D1-4DCD-8E99-DC8656EFAB8E</string>
+			<key>version</key>
+			<integer>0</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -694,7 +783,6 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
-Friday, 3 June 2016 – Compatbility for users who did not previously have Alfred v2 installed
 Wednesday, 28 October 2015 - attempted fix for reminders not quitting on OS &lt;10.9
 Tuesday, 27 October 2015 - fix for reminders not closing after adding a new reminder
 Thursday, 15 October 2015 – fix for OS 10.11 El Capitan
@@ -741,86 +829,77 @@ Uses icons from the Flurry collection by David Lanham / The Icon Factory
 Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/library/plist/)</string>
 	<key>uidata</key>
 	<dict>
+		<key>04638A91-5F31-429F-9B43-E1073C8A1865</key>
+		<dict>
+			<key>ypos</key>
+			<real>530</real>
+		</dict>
 		<key>09C6CC9D-C9FE-4B32-BB4D-8E53F5D41AE8</key>
 		<dict>
-			<key>xpos</key>
-			<integer>700</integer>
 			<key>ypos</key>
 			<real>350</real>
 		</dict>
 		<key>159A291E-3339-491E-8D3F-79091BE0319B</key>
 		<dict>
-			<key>xpos</key>
-			<integer>700</integer>
 			<key>ypos</key>
 			<real>50</real>
 		</dict>
 		<key>357C3151-39E1-42FD-8726-BBB740E0976C</key>
 		<dict>
-			<key>xpos</key>
-			<integer>300</integer>
 			<key>ypos</key>
 			<real>410</real>
 		</dict>
+		<key>6D980C90-487D-4CB5-904F-78C737B9B448</key>
+		<dict>
+			<key>ypos</key>
+			<real>530</real>
+		</dict>
 		<key>85F2415F-FAB1-457A-8FD6-AD14DEBFBC53</key>
 		<dict>
-			<key>xpos</key>
-			<integer>300</integer>
 			<key>ypos</key>
 			<real>290</real>
 		</dict>
 		<key>8A923D62-221E-4666-96C6-82F3B6F92834</key>
 		<dict>
-			<key>xpos</key>
-			<integer>300</integer>
 			<key>ypos</key>
 			<real>170</real>
 		</dict>
 		<key>94C011FF-2F31-415D-8811-A360D015D705</key>
 		<dict>
-			<key>xpos</key>
-			<integer>700</integer>
 			<key>ypos</key>
 			<real>470</real>
 		</dict>
 		<key>9A786411-7C10-48D0-AD69-6E1E1DFB8F97</key>
 		<dict>
-			<key>xpos</key>
-			<integer>500</integer>
 			<key>ypos</key>
 			<real>170</real>
 		</dict>
 		<key>A4F33D33-8B88-4725-993E-821A9D0CF057</key>
 		<dict>
-			<key>xpos</key>
-			<integer>500</integer>
 			<key>ypos</key>
 			<real>410</real>
 		</dict>
 		<key>A725F2F1-5A55-476A-9A26-E5B2BB71200E</key>
 		<dict>
-			<key>xpos</key>
-			<integer>300</integer>
 			<key>ypos</key>
 			<real>50</real>
 		</dict>
+		<key>CCC5806C-91D1-4DCD-8E99-DC8656EFAB8E</key>
+		<dict>
+			<key>ypos</key>
+			<real>590</real>
+		</dict>
 		<key>F71B4F2D-63BD-4B35-AA18-C6DDAA5A5CD9</key>
 		<dict>
-			<key>xpos</key>
-			<integer>500</integer>
 			<key>ypos</key>
 			<real>50</real>
 		</dict>
 		<key>FD379784-5C4C-46D9-8D0A-36E768AF1321</key>
 		<dict>
-			<key>xpos</key>
-			<integer>500</integer>
 			<key>ypos</key>
 			<real>290</real>
 		</dict>
 	</dict>
-	<key>version</key>
-	<string>62</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>

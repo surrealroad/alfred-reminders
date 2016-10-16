@@ -186,6 +186,12 @@ on parseReminder(q)
 	set theApplication to ""
 	set theIcon to ""
 	set valid to ""
+	set isStudy to false
+	
+	if first word of q is "Study" then
+		set isStudy to true
+		set q to (characters 7 thru -1 of q) as text
+	end if
 	
 	if first word of q is "this" then
 		set theApplication to my frontmostapp()
@@ -388,6 +394,11 @@ on parseReminder(q)
 		set theText to q
 	end if
 	
+	
+	if isStudy and theList is "" then
+		set theList to "Study"
+	end if
+	
 	if theApplication is "" and (theText is "" or valid is "no") then
 		set valid to "no"
 	else if theApplication is not "" and isAppSupported(theApplication, "Reminders") then
@@ -395,7 +406,7 @@ on parseReminder(q)
 	end if
 	set theText to (theText as string)
 	if theIcon is "" then set theIcon to my reminderIcon(theApplication)
-	return {theText:theText, theDate:theDate, valid:valid, theList:theList, thePriority:thePriority, theApplication:theApplication, theIcon:theIcon}
+	return {theText:theText, theDate:theDate, valid:valid, theList:theList, thePriority:thePriority, theApplication:theApplication, theIcon:theIcon, isStudy:isStudy}
 end parseReminder
 
 on reminderIcon(theApplication)
@@ -479,11 +490,12 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 	else
 		set reminder to my parseReminder(q)
 		set theText to theText of reminder
-		set theDate to theDate of reminder
+		set rDate to theDate of reminder
 		set thePriority to thePriority of reminder
 		set theApplication to theApplication of reminder
 		set valid to valid of reminder
 		set rList to theList of reminder
+		set isStudy to isStudy of reminder
 		set theBody to ""
 		
 		if valid is not "yes" then return "Could not understand command \"" & q & "\""
@@ -507,19 +519,46 @@ on actionReminderQuery(q, shouldOpen, appLib, wf, cacheFile, defaultList)
 				else
 					set theList to first list's name
 				end if
-				if theDate is not "" then
-					tell list theList
-						set theReminder to make new reminder with properties {name:theText, remind me date:theDate, body:theBody, priority:thePriority}
-					end tell
+				
+				if isStudy then
+					if rDate as string is "" then
+						set strDate to (current date)
+						set repeat0 to ((strDate) + hours * (1))
+					else
+						--  defer revision to start on given date						
+						set strDate to rDate
+						set repeat0 to (strDate)
+					end if
+					
+					if time of strDate is less than 68400 then
+						set repeat1 to ((strDate) + hours * (5))
+					else
+						set repeat1 to ((strDate) + hours * (12))
+					end if
+					set repeat2 to ((strDate) + days * (1))
+					set repeat3 to ((strDate) + days * (5))
+					set repeat4 to ((strDate) + days * (25))
+					set mySpacedRepetition to {repeat0, repeat1, repeat2, repeat3, repeat4}
 				else
-					tell list theList
-						set theReminder to make new reminder with properties {name:theText, body:theBody, priority:thePriority}
-					end tell
+					set mySpacedRepetition to {rDate}
 				end if
-				if shouldOpen then
-					activate
-					show theReminder
-				end if
+				
+				repeat with theDate in mySpacedRepetition
+					
+					if theDate as string is not "" then
+						tell list theList
+							set theReminder to make new reminder with properties {name:theText, remind me date:theDate, body:theBody, priority:thePriority}
+						end tell
+					else
+						tell list theList
+							set theReminder to make new reminder with properties {name:theText, body:theBody, priority:thePriority}
+						end tell
+					end if
+					if shouldOpen then
+						activate
+						show theReminder
+					end if
+				end repeat
 			end using terms from
 		end tell
 		set osver to system version of (system info)
