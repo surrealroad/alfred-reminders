@@ -38,7 +38,11 @@ property supportedReminderApplications : {Â
 	{appname:"Vienna.app", icon:"RSS.png"}, Â
 	{appname:"OmniFocus.app", icon:"OmniFocus.png"}, Â
 	{appname:"FoldingText.app", icon:"App.png"}, Â
-	{appname:"Google Chrome Canary.app", icon:"Chrome Canary.png"} Â
+	{appname:"Google Chrome Canary.app", icon:"Chrome Canary.png"}, Â
+	{appname:"Microsoft OneNote.app", icon:"OneNote.png"}, Â
+	{appname:"Microsoft Word.app", icon:"MSWord.png"}, Â
+	{appname:"Microsoft PowerPoint.app", icon:"Powerpoint.png"}, Â
+	{appname:"Adobe Acrobat.app", icon:"AcrobatPro.png"} Â
 		}
 
 

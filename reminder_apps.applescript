@@ -1,5 +1,5 @@
 on reminderFromApplication(theApplication)
-set workflowFolder to do shell script "pwd"
+	set workflowFolder to do shell script "pwd"
 	set theText to ""
 	set theBody to ""
 	if theApplication is "Google Chrome.app" then
@@ -28,7 +28,15 @@ set workflowFolder to do shell script "pwd"
 		set applib to load script POSIX file (workflowFolder & "/app_OmniFocus.scpt")
 	else if theApplication is "FoldingText.app" then
 		set applib to load script POSIX file (workflowFolder & "/app_FoldingText.scpt")
-	end if
+	else if theApplication is "Microsoft OneNote.app" then
+		set applib to load script POSIX file (workflowFolder & "/app_OneNote.scpt")
+	else if theApplication is "Microsoft Word.app" then
+		set applib to load script POSIX file (workflowFolder & "/app_MSWord.scpt")
+	else if theApplication is "Microsoft PowerPoint.app" then
+		set applib to load script POSIX file (workflowFolder & "/app_PowerPoint.scpt")
+	else if theApplication is "Adobe Acrobat.app" then
+		set applib to load script POSIX file (workflowFolder & "/app_AcrobatPro.scpt")
+	end if	
 	set theText to applib's getTitle()
 	set theBody to applib's getBody()
 	return {theText:theText, theBody:theBody}
