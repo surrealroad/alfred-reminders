@@ -255,7 +255,7 @@ property shouldCheckForUpdates : true
 property checkFrequency : 4 * days
 property showReminders : true
 
-property currentVersion : 62
+property currentVersion : 63
 property workflowFolder : do shell script "pwd"
 property lib : load script POSIX file (workflowFolder &amp; "/alfred_library.scpt")
 property wf : load script POSIX file (workflowFolder &amp; "/q_workflow.scpt")
@@ -694,6 +694,7 @@ If you want to change the default reminder list, edit the applescript property a
  
 Changelog:
 
+Monday, 24 October 2016 – Add support for Microsoft Word, Adobe Acrobat Pro, OneNote, Powerpoint (Thanks to catgsmith!)
 Friday, 3 June 2016 – Compatbility for users who did not previously have Alfred v2 installed
 Wednesday, 28 October 2015 - attempted fix for reminders not quitting on OS &lt;10.9
 Tuesday, 27 October 2015 - fix for reminders not closing after adding a new reminder
@@ -820,7 +821,7 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>62</string>
+	<string>63</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
