@@ -34,6 +34,9 @@ All sorts of combinations are possible!
 ### Configuration
 If you want to change the default reminder list, edit the variables component at the top of the workflow, otherwise it will just use the first one (unless you use "in Y list" at the end).
 
+### Building from source
+In Alfred create a new Blank Workflow, then right-click and choose Open In Finder. Then replace all the files with this source.
+
 ## Acknowlegdements
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 
