@@ -236,9 +236,10 @@ function createReminder(reminderData) {
 			console.log("Date:" + data['date'])
 		}
 		reminder = Reminders.Reminder(data)
-		console.log(reminder);
+		//console.log(reminder);
 		reminder.make();
-		return "Created reminder: " + reminder.name();
+		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
+		return "Created reminder: " data['name'];
 	} catch (e) {
 		console.log(e);
 		return e
@@ -343,7 +344,8 @@ Uses icons from the Flurry collection by David Lanham / The Icon Factory
  
 Changelog:
 
-v64 (Wednesday, 7 December 2016) – Rewritten from the gound up in JavaScript in Automation. Now requires Alfred v3+, MacOS Sierra+.
+v65 (Thursday, 8 December 2016) – Fixed reminders app hanging temporarily after creating a new reminder
+v64 (Wednesday, 7 December 2016) – Rewritten from the ground up in JavaScript for Automation. Now requires Alfred v3+, MacOS Sierra+.
 NEW: Enhanced date/time natural language parsing. Never worry about the correct syntax again!
 NEW: Better messaging about what will happen when actioning the item.
 FIXED: (Hopefully) improved performance.
@@ -458,7 +460,7 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>64</string>
+	<string>65</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
