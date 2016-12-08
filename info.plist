@@ -89,6 +89,70 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>function run(argv) {
+	var query = argv[0];
+
+	ObjC.import('stdlib');
+	var reminders = JSON.parse($.getenv('reminders'));
+	//console.log(reminders);
+
+
+	// get the actioned item
+	reminder = reminders.find(function (r) {
+		return r.arg == query;
+	});
+	//console.log(reminder);
+
+	return createReminder(reminder);
+}
+
+function createReminder(reminderData) {
+	var Reminders = Application('Reminders');
+	try {
+		data = {name:reminderData['text']}
+		console.log("Name:" + data['name'])
+		if(reminderData['body']) {
+			data['body'] = reminderData['body'];
+		}
+		if(reminderData['date']) {
+			data['remindMeDate'] = new Date(reminderData['date'])
+			console.log("Date:" + data['date']);
+		}
+		if(reminderData['priority']) {
+			data['priority'] = parseInt(reminderData['priority']);
+		}
+		reminder = Reminders.Reminder(data);
+		//console.log(reminder);
+		reminder.make();
+		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
+		return "Created reminder: " + data['name'];
+	} catch (e) {
+		console.log(e);
+		return e;
+	}
+}</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>7</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>argumenttype</key>
@@ -120,8 +184,25 @@
 	var items = []
 	var reminders = []
 
-	var app = Application.currentApplication()
-	app.includeStandardAdditions = true
+  // list supported applications along with the associated JXA to fetch information
+  var supportedReminderApplications = [
+  	{appname:"Safari", icon:"Safari.png", reminderText:'Application("Safari").windows[0].currentTab.name();', reminderBody:'Application("Safari").windows[0].currentTab.url();'},
+  	{appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
+  	{appname:"Google Chrome", icon:"Chrome.png", reminderText:'Application("Google Chrome").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome").windows[0].activeTab.url();'},
+  	{appname:"Mail", icon:"Mail.png",  reminderText:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; m.subject() + " (From " + m.sender() + ")"', reminderBody:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; "message://&lt;" + m.messageId() + "&gt;"'},
+  	{appname:"Contacts", icon:"Address Book.png", reminderText:'Application("Contacts").selection()[0].name()', reminderBody:'"addressbook://" + Application("Contacts").selection()[0].id()'},
+  	{appname:"Address Book", icon:"Address Book.png", reminderText:'Application("Contacts").selection()[0].name()', reminderBody:'"addressbook://" + Application("Contacts").selection()[0].id()'},
+  	{appname:"Finder", icon:"Finder.png", reminderText:'Application("Finder").selection()[0].name()', reminderBody:'Application("Finder").selection()[0].url()'},
+  	{appname:"Chromium", icon:"Chromium.png", reminderText:'Application("Chromium").windows[0].activeTab.title();', reminderBody:'Application("Chromium").windows[0].activeTab.url();'},
+  	{appname:"TextEdit", icon:"TextEdit.png", reminderText:'Application("TextEdit").documents[0].name()', reminderBody:'var p = Application("TextEdit").documents[0].path(); if(p) "file://" + p'},
+  	{appname:"Textmate", icon:"TextMate.png", reminderText:'Application("TextMate").documents[0].name()', reminderBody:'var p = Application("TextMate").documents[0].path(); if(p) "file://" + p'},
+  	{appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
+  	{appname:"FoldingText", icon:"App.png", reminderText:'Application("FoldingText").documents[0].name()', reminderBody:'var p = Application("FoldingText").documents[0].path(); if(p) "file://" + p'},
+  	{appname:"Google Chrome Canary", icon:"Chrome Canary.png",  reminderText:'Application("Google Chrome Canary").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome Canary").windows[0].activeTab.url();'},
+  //	{appname:"Microsoft Word", icon:"MSWord.png", file:"app_MSWord.js"},
+  //	{appname:"Microsoft PowerPoint", icon:"Powerpoint.png", file:"app_PowerPoint.js"},
+  //	{appname:"Adobe Acrobat", icon:"AcrobatPro.png", file:"app_AcrobatPro.js"}
+  ]
 
 	//https://github.com/dtinth/JXA-Cookbook/wiki/Importing-Scripts
 
@@ -142,20 +223,6 @@
 	contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
 
 	eval(ObjC.unwrap(contents));
-
-	// examples for testing
-	//var query = 'Homework 5 due next monday at 3pm';
-	//var query = 'today release the hamsters into the wild';
-	//var query = 'tomorrow bring about financial ruin upon my enemies';
-	//var query = 'thursday have a banana';
-	//var query = 'in 5 minutes drop everything';
-	//var query = 'in 2 hours laugh out loud in random thoughts list';
-	//var query = 'in 1 days at 3pm run amok';
-	//var query = '24/12/13 forget everything I know about things in movies';
-	//var query = '12 June 15 come up with some interesting ideas';
-	//var query = '31-12-99 23:22 panic about the millennium bug';
-	//var query = 'at 2pm wait for nothing in particular';
-	//var query = 'next thursday at 15.30 ask some difficult questions';
 
 	// extract priority
 	var priority = "";
@@ -210,6 +277,38 @@
     }
   }
 
+  // extract application
+  var application = "",
+    reminderBody = "";
+  // test for "this" keyword
+  // http://regexr.com/3er84
+  var thisRegex = /^this$|^this\s(.*)/i
+  var matches = thisRegex.exec(query)
+  if(matches &amp;&amp; matches.length == 2) {
+    query = matches[1];
+    var app = Application("System Events").applicationProcesses.where({
+       frontmost: true
+    })[0];
+    var currentApplication = app.properties().name;
+    console.log(currentApplication);
+    application = supportedReminderApplications.find(function (a) {
+  		return a.appname == currentApplication;
+  	});
+
+    if(!application) {
+      // terminate with an unactionable message that current application is not supported
+      var item = {title:"Add Reminder", arg:-1, valid:false, subtitle:currentApplication + " is not supported by this workflow at this time", icon:{path:"Instruments.png"}};
+      return JSON.stringify({items:[item]});
+    }
+
+    // get application-specific data
+    application['text'] = eval(application['reminderText']);
+    console.log(application['text']);
+    application['body'] = eval(application['reminderBody'])
+    console.log(application['body']);
+
+  }
+
 	var results = window.chrono.parse(query);
 
 	for (var i = 0; i &lt; results.length; i++) {
@@ -217,12 +316,12 @@
 		var d = results[i].start.date(); // Create a Date object
 		var reminderText = resultText.trim();
 		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority}));
-		reminders.push(getReminderData({arg:i, reminderText:reminderText, date:d, list:"", priority:priority, application:""}));
+		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, list:"", priority:priority, application:application}));
 	}
 
 	// always submit non-dated item
-	items.push(getAction({arg:-1, valid:true, reminderText:query, priority:priority}));
-	reminders.push(getReminderData({arg:-1, reminderText:query, date:"", list:"", priority:priority, application:""}));
+	items.push(getAction({arg:-1, valid:true, reminderText:query, priority:priority, application:application}));
+	reminders.push(getReminderData({arg:-1, reminderText:query, reminderBody:"", date:"", list:"", priority:priority, application:application}));
 
 	jsonResult['items'] = items;
 	jsonResult['variables'] = {"reminders":JSON.stringify(reminders)}
@@ -232,6 +331,7 @@
 }
 
 // returns a dictionary corresponding to an Alfred action item
+// https://www.alfredapp.com/help/workflows/inputs/script-filter/json/
 // arg: Alfred item arg
 // valid: true|false whether to enable action
 // reminderText: text of the reminder
@@ -242,8 +342,12 @@
 function getAction(options) {
   var arg = options['arg'],
     valid = options['valid'],
+    icon = "",
     title = "Add Reminder",
-    subtitle = "Create a new reminder to \"" + options['reminderText'] + "\"";
+    subtitle = "Create a new reminder";
+
+  if(options['reminderText']) subtitle += " to \"" + options['reminderText'] + "\"";
+  else if(options['application']['text']) subtitle += " about \"" + options['application']['text'] + "\"";
 
   if(options['date']) {
     subtitle += " on " + options['date'].toString();
@@ -251,6 +355,12 @@ function getAction(options) {
 
   if(options['whenText']) {
     title = "Remind me " + options['whenText'];
+  }
+
+  if(options['application']) {
+    var appname = options['application']['appname'];
+    icon = options['application']['icon'];
+    title += " from " + appname;
   }
 
   if(options['priority']) {
@@ -269,13 +379,14 @@ function getAction(options) {
     }
   }
 
-  var item = {title:title, arg:arg, valid:valid, subtitle:subtitle};
+  var item = {title:title, arg:arg, valid:valid, subtitle:subtitle, icon:{path:icon}};
   return item;
 }
 
 // returns a dictionary containing data to make a reminder
 // arg: Alfred item arg
 // reminderText: text of the reminder
+// reminderBody: body text for the reminder
 // date: remind me date
 // list: reminder list name
 // priority: 1|2|3 reminder priority value
@@ -285,23 +396,30 @@ function getReminderData(options) {
   var arg = options['arg'],
     text = options['reminderText'],
     priority = options['priority'],
+    body = "",
     date = "",
     application = "",
     list = "";
+
+  if(options['reminderBody']) {
+    body = options['reminderBody'];
+  }
 
   if(options['date']) {
     date = options['date'];
   }
 
   if(options['application']) {
-    application = options['application'];
+    application = options['application']['appname'];
+    if(!text) text = options['application']['text'];
+    if(!body) body = options['application']['body'];
   }
 
   if(options['list']) {
     list = options['list'];
   }
 
-  var data = {arg:arg, text:text, date:date, list:list, priority:parseInt(priority), application:application}
+  var data = {arg:arg, text:text, body:body, date:date, list:list, priority:parseInt(priority), application:application}
   return data
 }
 </string>
@@ -322,67 +440,6 @@ function getReminderData(options) {
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
 			<string>B3DC4BDA-18AF-4BC9-B6FD-5AC43239F9A0</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>68</integer>
-				<key>script</key>
-				<string>function run(argv) {
-	var query = argv[0];
-
-	ObjC.import('stdlib');
-	var reminders = JSON.parse($.getenv('reminders'));
-	//console.log(reminders);
-
-
-	// get the actioned item
-	reminder = reminders.find(function (r) {
-		return r.arg == query;
-	});
-	//console.log(reminder);
-
-	return createReminder(reminder);
-}
-
-function createReminder(reminderData) {
-	var Reminders = Application('Reminders');
-	try {
-		data = {name:reminderData['text']}
-		console.log("Name:" + data['name'])
-		if(reminderData['date']) {
-			data['remindMeDate'] = new Date(reminderData['date'])
-			console.log("Date:" + data['date'])
-		}
-		if(reminderData['priority']) {
-			data['priority'] = parseInt(reminderData['priority']);
-		}
-		reminder = Reminders.Reminder(data);
-		//console.log(reminder);
-		reminder.make();
-		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
-		return "Created reminder: " + data['name'];
-	} catch (e) {
-		console.log(e);
-		return e;
-	}
-}</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>7</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -486,6 +543,7 @@ Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
  
 Changelog:
+v67 (Thursday, 8 December 2016) – Added support for app-secific reminders
 v66 (Thursday, 8 December 2016) - Added support for priorities
 v65 (Thursday, 8 December 2016) – Fixed reminders app hanging temporarily after creating a new reminder
 v64 (Wednesday, 7 December 2016) – Rewritten from the ground up in JavaScript for Automation. Now requires Alfred v3+, MacOS Sierra+.
@@ -593,7 +651,6 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 • Support Apps
 • Auto-update support
 • "help" keyword
-• Note created notification
 • Quit reminders automatically</string>
 			<key>xpos</key>
 			<integer>640</integer>
@@ -602,7 +659,7 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>66</string>
+	<string>67</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
