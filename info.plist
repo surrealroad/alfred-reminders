@@ -89,70 +89,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>68</integer>
-				<key>script</key>
-				<string>function run(argv) {
-	var query = argv[0];
-
-	ObjC.import('stdlib');
-	var reminders = JSON.parse($.getenv('reminders'));
-	//console.log(reminders);
-
-
-	// get the actioned item
-	reminder = reminders.find(function (r) {
-		return r.arg == query;
-	});
-	//console.log(reminder);
-
-	return createReminder(reminder);
-}
-
-function createReminder(reminderData) {
-	var Reminders = Application('Reminders');
-	try {
-		data = {name:reminderData['text']}
-		console.log("Name:" + data['name'])
-		if(reminderData['body']) {
-			data['body'] = reminderData['body'];
-		}
-		if(reminderData['date']) {
-			data['remindMeDate'] = new Date(reminderData['date'])
-			console.log("Date:" + data['date']);
-		}
-		if(reminderData['priority']) {
-			data['priority'] = parseInt(reminderData['priority']);
-		}
-		reminder = Reminders.Reminder(data);
-		//console.log(reminder);
-		reminder.make();
-		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
-		return "Created reminder: " + data['name'];
-	} catch (e) {
-		console.log(e);
-		return e;
-	}
-}</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>7</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>argumenttype</key>
@@ -186,22 +122,22 @@ function createReminder(reminderData) {
 
   // list supported applications along with the associated JXA to fetch information
   var supportedReminderApplications = [
-  	{appname:"Safari", icon:"Safari.png", reminderText:'Application("Safari").windows[0].currentTab.name();', reminderBody:'Application("Safari").windows[0].currentTab.url();'},
-  	{appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
-  	{appname:"Google Chrome", icon:"Chrome.png", reminderText:'Application("Google Chrome").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome").windows[0].activeTab.url();'},
-  	{appname:"Mail", icon:"Mail.png",  reminderText:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; m.subject() + " (From " + m.sender() + ")"', reminderBody:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; "message://&lt;" + m.messageId() + "&gt;"'},
-  	{appname:"Contacts", icon:"Address Book.png", reminderText:'Application("Contacts").selection()[0].name()', reminderBody:'"addressbook://" + Application("Contacts").selection()[0].id()'},
   	{appname:"Address Book", icon:"Address Book.png", reminderText:'Application("Contacts").selection()[0].name()', reminderBody:'"addressbook://" + Application("Contacts").selection()[0].id()'},
-  	{appname:"Finder", icon:"Finder.png", reminderText:'Application("Finder").selection()[0].name()', reminderBody:'Application("Finder").selection()[0].url()'},
-  	{appname:"Chromium", icon:"Chromium.png", reminderText:'Application("Chromium").windows[0].activeTab.title();', reminderBody:'Application("Chromium").windows[0].activeTab.url();'},
-  	{appname:"TextEdit", icon:"TextEdit.png", reminderText:'Application("TextEdit").documents[0].name()', reminderBody:'var p = Application("TextEdit").documents[0].path(); if(p) "file://" + p'},
-  	{appname:"Textmate", icon:"TextMate.png", reminderText:'Application("TextMate").documents[0].name()', reminderBody:'var p = Application("TextMate").documents[0].path(); if(p) "file://" + p'},
-  	{appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
-  	{appname:"FoldingText", icon:"App.png", reminderText:'Application("FoldingText").documents[0].name()', reminderBody:'var p = Application("FoldingText").documents[0].path(); if(p) "file://" + p'},
-  	{appname:"Google Chrome Canary", icon:"Chrome Canary.png",  reminderText:'Application("Google Chrome Canary").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome Canary").windows[0].activeTab.url();'},
-  //	{appname:"Microsoft Word", icon:"MSWord.png", file:"app_MSWord.js"},
-  //	{appname:"Microsoft PowerPoint", icon:"Powerpoint.png", file:"app_PowerPoint.js"},
-  //	{appname:"Adobe Acrobat", icon:"AcrobatPro.png", file:"app_AcrobatPro.js"}
+		{appname:"AdobeAcrobat", icon:"AcrobatPro.png", reminderText:'Application("Adobe Acrobat").activeDoc.name()', reminderBody:'var p = Application("Adobe Acrobat").activeDoc.fileAlias().toString(); if(p) "file://" + escape(p)'},
+		{appname:"Chromium", icon:"Chromium.png", reminderText:'Application("Chromium").windows[0].activeTab.title();', reminderBody:'Application("Chromium").windows[0].activeTab.url();'},
+		{appname:"Contacts", icon:"Address Book.png", reminderText:'Application("Contacts").selection()[0].name()', reminderBody:'"addressbook://" + Application("Contacts").selection()[0].id()'},
+		{appname:"Finder", icon:"Finder.png", reminderText:'Application("Finder").selection()[0].name()', reminderBody:'Application("Finder").selection()[0].url()'},
+		{appname:"FoldingText", icon:"App.png", reminderText:'Application("FoldingText").documents[0].name()', reminderBody:'var p = Application("FoldingText").documents[0].path(); if(p) "file://" + escape(p)'},
+		{appname:"Google Chrome", icon:"Chrome.png", reminderText:'Application("Google Chrome").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome").windows[0].activeTab.url();'},
+		{appname:"Google Chrome Canary", icon:"Chrome Canary.png",  reminderText:'Application("Google Chrome Canary").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome Canary").windows[0].activeTab.url();'},
+		{appname:"Mail", icon:"Mail.png",  reminderText:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; m.subject() + " (From " + m.sender() + ")"', reminderBody:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; "message://&lt;" + m.messageId() + "&gt;"'},
+  	{appname:"Microsoft PowerPoint", icon:"Powerpoint.png", reminderText:'Application("Microsoft PowerPoint").activePresentation.name()', reminderBody:'var p = Application("Microsoft PowerPoint").activePresentation.fullName(); if(p) "file://" + escape(p)'},
+		{appname:"Microsoft Word", icon:"MSWord.png", reminderText:'Application("Microsoft Word").activeDocument.name()', reminderBody:'var p = Application("Microsoft Word").activeDocument.posixFullName(); if(p) "file://" + escape(p)'},
+  	{appname:"Safari", icon:"Safari.png", reminderText:'Application("Safari").windows[0].currentTab.name();', reminderBody:'Application("Safari").windows[0].currentTab.url();'},
+		{appname:"TextEdit", icon:"TextEdit.png", reminderText:'Application("TextEdit").documents[0].name()', reminderBody:'var p = Application("TextEdit").documents[0].path(); if(p) "file://" + escape(p)'},
+		{appname:"TextMate", icon:"TextMate.png", reminderText:'Application("TextMate").documents[0].name()', reminderBody:'var p = Application("TextMate").documents[0].path(); if(p) "file://" + escape(p)'},
+		{appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
+  	{appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
   ]
 
 	//https://github.com/dtinth/JXA-Cookbook/wiki/Importing-Scripts
@@ -446,6 +382,70 @@ function getReminderData(options) {
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>function run(argv) {
+	var query = argv[0];
+
+	ObjC.import('stdlib');
+	var reminders = JSON.parse($.getenv('reminders'));
+	//console.log(reminders);
+
+
+	// get the actioned item
+	reminder = reminders.find(function (r) {
+		return r.arg == query;
+	});
+	//console.log(reminder);
+
+	return createReminder(reminder);
+}
+
+function createReminder(reminderData) {
+	var Reminders = Application('Reminders');
+	try {
+		data = {name:reminderData['text']}
+		console.log("Name:" + data['name'])
+		if(reminderData['body']) {
+			data['body'] = reminderData['body'];
+		}
+		if(reminderData['date']) {
+			data['remindMeDate'] = new Date(reminderData['date'])
+			console.log("Date:" + data['date']);
+		}
+		if(reminderData['priority']) {
+			data['priority'] = parseInt(reminderData['priority']);
+		}
+		reminder = Reminders.Reminder(data);
+		//console.log(reminder);
+		reminder.make();
+		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
+		return "Created reminder: " + data['name'];
+	} catch (e) {
+		console.log(e);
+		return e;
+	}
+}</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>7</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>lastpathcomponent</key>
 				<false/>
 				<key>onlyshowifquerypopulated</key>
@@ -524,6 +524,31 @@ To set the priority of the reminder, either use exclamation marks right at the s
 - `r decide what to have for lunch !lo`
 - `r make a turkey sandwich p3`
 
+### Apps
+Get reminded about the app you're using, for example the selected file in Finder, or the current tab in Chrome or Safari.
+
+To create a reminder about the active app, simply type `r this`. Or keep typing to set a date, priority or a custom title, for example `r this drop some sick beats on Friday !!!`.
+
+The following apps are currently supported:
+
+- Adobe Acrobat (Pro/DX)
+- Chromium
+- Contacts
+- Finder
+- FoldingText
+- Google Chrome
+- Google Chrome Canary
+- Mail
+- Microsoft PowerPoint
+- Microsoft Word
+- Safari
+- TextEdit
+- TextMate
+- Vienna
+- WebKit
+
+Apps can be added on request. Just [raise an issue](https://github.com/surrealroad/alfred-reminders/issues/new) with the app you use. As long as it's freely available and has AppleScript support, it can be added.
+
 ### Getting help
 
 `r help` will display the above examples
@@ -543,6 +568,7 @@ Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
  
 Changelog:
+v68 (Friday, 9 December 2016) – Added remaining app handlers, escaped paths
 v67 (Thursday, 8 December 2016) – Added support for app-secific reminders
 v66 (Thursday, 8 December 2016) - Added support for priorities
 v65 (Thursday, 8 December 2016) – Fixed reminders app hanging temporarily after creating a new reminder
@@ -648,7 +674,6 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>note</key>
 			<string>TODO:
 • Support Lists
-• Support Apps
 • Auto-update support
 • "help" keyword
 • Quit reminders automatically</string>
@@ -659,7 +684,7 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>67</string>
+	<string>68</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>

@@ -38,6 +38,31 @@ To set the priority of the reminder, either use exclamation marks right at the s
 - `r decide what to have for lunch !lo`
 - `r make a turkey sandwich p3`
 
+### Apps
+Get reminded about the app you're using, for example the selected file in Finder, or the current tab in Chrome or Safari.
+
+To create a reminder about the active app, simply type `r this`. Or keep typing to set a date, priority or a custom title, for example `r this drop some sick beats on Friday !!!`.
+
+The following apps are currently supported:
+
+- Adobe Acrobat (Pro/DX)
+- Chromium
+- Contacts
+- Finder
+- FoldingText
+- Google Chrome
+- Google Chrome Canary
+- Mail
+- Microsoft PowerPoint
+- Microsoft Word
+- Safari
+- TextEdit
+- TextMate
+- Vienna
+- WebKit
+
+Apps can be added on request. Just [raise an issue](https://github.com/surrealroad/alfred-reminders/issues/new) with the app you use. As long as it's freely available and has AppleScript support, it can be added.
+
 ### Getting help
 
 `r help` will display the above examples
