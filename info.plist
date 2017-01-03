@@ -20,6 +20,16 @@
 				<key>vitoclose</key>
 				<false/>
 			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
 		</array>
 		<key>9B74DEE8-5782-4018-AEED-4292720A1DD2</key>
 		<array>
@@ -38,7 +48,7 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
+				<string>9B74DEE8-5782-4018-AEED-4292720A1DD2</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -72,7 +82,7 @@
 			<key>config</key>
 			<dict>
 				<key>argument</key>
-				<string></string>
+				<string>{query}</string>
 				<key>variables</key>
 				<dict>
 					<key>defaultList</key>
@@ -159,6 +169,16 @@
 	contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
 
 	eval(ObjC.unwrap(contents));
+
+	// extract list
+	var reminderList = "";
+	// http://regexr.com/3f03r
+	var listRegex = /(.+) in (.+) list$/i
+	var matches = listRegex.exec(query)
+	if(matches &amp;&amp; matches.length == 3) {
+		reminderList = matches[2];
+		query = matches[1];
+	}
 
 	// extract priority
 	var priority = "";
@@ -251,13 +271,13 @@
 		resultText = query.replace(results[i].text,'');
 		var d = results[i].start.date(); // Create a Date object
 		var reminderText = resultText.trim();
-		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority}));
-		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, list:"", priority:priority, application:application}));
+		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority, reminderList:reminderList}));
+		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, list:"", priority:priority, application:application, reminderList:reminderList}));
 	}
 
 	// always submit non-dated item
-	items.push(getAction({arg:-1, valid:true, reminderText:query, priority:priority, application:application}));
-	reminders.push(getReminderData({arg:-1, reminderText:query, reminderBody:"", date:"", list:"", priority:priority, application:application}));
+	items.push(getAction({arg:-1, valid:true, reminderText:query, priority:priority, application:application, reminderList:reminderList}));
+	reminders.push(getReminderData({arg:-1, reminderText:query, reminderBody:"", date:"", list:"", priority:priority, application:application, reminderList:reminderList}));
 
 	jsonResult['items'] = items;
 	jsonResult['variables'] = {"reminders":JSON.stringify(reminders)}
@@ -276,6 +296,7 @@
 // priority: 1|2|3 reminder priority value
 //
 function getAction(options) {
+	var Reminders = Application('Reminders');
   var arg = options['arg'],
     valid = options['valid'],
     icon = "",
@@ -315,6 +336,19 @@ function getAction(options) {
     }
   }
 
+	if(options['reminderList']) {
+		// verify a matching list exists
+		lists = Reminders.lists.whose({name:options['reminderList']})
+		if(lists.length) {
+			subtitle += " in the " + lists[0].name() + " list";
+		}	else {
+			valid = false;
+			title = "Cannot create reminder"
+			subtitle = "No list called \"" + options['reminderList'] + "\" was found in Reminders";
+			// TODO: maybe add a different icon here
+		}
+	}
+
   var item = {title:title, arg:arg, valid:valid, subtitle:subtitle, icon:{path:icon}};
   return item;
 }
@@ -351,8 +385,8 @@ function getReminderData(options) {
     if(!body) body = options['application']['body'];
   }
 
-  if(options['list']) {
-    list = options['list'];
+  if(options['reminderList']) {
+    list = options['reminderList'];
   }
 
   var data = {arg:arg, text:text, body:body, date:date, list:list, priority:parseInt(priority), application:application}
@@ -396,15 +430,15 @@ function getReminderData(options) {
 
 
 	// get the actioned item
-	reminder = reminders.find(function (r) {
+	reminderData = reminders.find(function (r) {
 		return r.arg == query;
 	});
-	//console.log(reminder);
+	//console.log(reminderData);
 
-	return createReminder(reminder);
+	return createReminder(reminderData, $.getenv('defaultList'));
 }
 
-function createReminder(reminderData) {
+function createReminder(reminderData, defaultList) {
 	var Reminders = Application('Reminders');
 	try {
 		data = {name:reminderData['text']}
@@ -419,9 +453,19 @@ function createReminder(reminderData) {
 		if(reminderData['priority']) {
 			data['priority'] = parseInt(reminderData['priority']);
 		}
-		reminder = Reminders.Reminder(data);
+		if(reminderData['list'] &amp;&amp; Reminders.lists.whose({name:reminderData['list']}).length) {
+			// list provided by query
+			reminderList = Reminders.lists.whose({name:reminderData['list']})[0];
+		} else if(defaultList &amp;&amp; Reminders.lists.whose({name:defaultList}).length) {
+			// list provided by worklow variable
+			reminderList = Reminders.lists.whose({name:defaultList})[0];
+		} else {
+			// default list provided by application
+			reminderList = Reminders.defaultList();
+		}
 		//console.log(reminder);
-		reminder.make();
+		reminder = Reminders.Reminder(data);
+		reminderList.reminders.push(reminder);
 		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
 		return "Created reminder: " + data['name'];
 	} catch (e) {
@@ -482,6 +526,24 @@ Variables: {allvars}</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argument</key>
+				<string>Output from Script: '{query}'
+Variables: {allvars}</string>
+				<key>cleardebuggertext</key>
+				<false/>
+				<key>processoutputs</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.debug</string>
+			<key>uid</key>
+			<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>alfred-reminders
@@ -523,6 +585,12 @@ To set the priority of the reminder, either use exclamation marks right at the s
 - `r thursday have a banana medium priority`
 - `r decide what to have for lunch !lo`
 - `r make a turkey sandwich p3`
+
+### Lists
+
+To choose a list to use on a per-reminder basis, type `in &lt;list name&gt; list` right at the end of the command, for example `r Get Santa outfit !2 in Christmas list`. If a matching list can't be found, you won't be able to action the command.
+
+In all other cases, the default Reminders list will be used (typically the first one). If you prefer, you can edit the `defaultList` variable within the workflow's Arg and Vars node (note that you'll have to edit this each time you upgrade the workflow however).
 
 ### Apps
 Get reminded about the app you're using, for example the selected file in Finder, or the current tab in Chrome or Safari.
@@ -568,6 +636,7 @@ Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
  
 Changelog:
+v69 (Tuesday, 3 January 2017) – Added support for different lists
 v68 (Friday, 9 December 2016) – Added remaining app handlers, escaped paths
 v67 (Thursday, 8 December 2016) – Added support for app-secific reminders
 v66 (Thursday, 8 December 2016) - Added support for priorities
@@ -636,6 +705,17 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>ypos</key>
 			<integer>230</integer>
 		</dict>
+		<key>7C61BE1C-BE82-42B1-A275-DDECED8286B9</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>1</integer>
+			<key>note</key>
+			<string>Show debugger to see output from Run Script</string>
+			<key>xpos</key>
+			<integer>670</integer>
+			<key>ypos</key>
+			<integer>440</integer>
+		</dict>
 		<key>8AD0B8E1-2FF7-48C0-AF64-5BF7C0D23024</key>
 		<dict>
 			<key>colorindex</key>
@@ -645,16 +725,16 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>xpos</key>
 			<integer>480</integer>
 			<key>ypos</key>
-			<integer>430</integer>
+			<integer>440</integer>
 		</dict>
 		<key>9B74DEE8-5782-4018-AEED-4292720A1DD2</key>
 		<dict>
 			<key>note</key>
-			<string>Edit this to change some default settings.</string>
+			<string>Double-click this to edit default settings.</string>
 			<key>xpos</key>
-			<integer>250</integer>
+			<integer>320</integer>
 			<key>ypos</key>
-			<integer>90</integer>
+			<integer>120</integer>
 		</dict>
 		<key>B3DC4BDA-18AF-4BC9-B6FD-5AC43239F9A0</key>
 		<dict>
@@ -663,7 +743,7 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>note</key>
 			<string>This handles the parsing of the query into actionable items.</string>
 			<key>xpos</key>
-			<integer>210</integer>
+			<integer>130</integer>
 			<key>ypos</key>
 			<integer>230</integer>
 		</dict>
@@ -673,7 +753,6 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<integer>6</integer>
 			<key>note</key>
 			<string>TODO:
-• Support Lists
 • Auto-update support
 • "help" keyword
 • Quit reminders automatically</string>
@@ -684,7 +763,7 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>68</string>
+	<string>69</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>

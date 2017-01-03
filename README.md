@@ -38,6 +38,12 @@ To set the priority of the reminder, either use exclamation marks right at the s
 - `r decide what to have for lunch !lo`
 - `r make a turkey sandwich p3`
 
+### Lists
+
+To choose a list to use on a per-reminder basis, type `in <list name> list` right at the end of the command, for example `r Get Santa outfit !2 in Christmas list`. If a matching list can't be found, you won't be able to action the command.
+
+In all other cases, the default Reminders list will be used (typically the first one). If you prefer, you can edit the `defaultList` variable within the workflow's Arg and Vars node (note that you'll have to edit this each time you upgrade the workflow however).
+
 ### Apps
 Get reminded about the app you're using, for example the selected file in Finder, or the current tab in Chrome or Safari.
 
