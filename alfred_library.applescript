@@ -314,6 +314,8 @@ on parseReminder(q)
 							end try
 						end if
 						set AppleScript's text item delimiters to old_delims
+					else
+						set valid to "yes"
 					end if
 				on error
 					set valid to "no"
