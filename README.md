@@ -3,7 +3,7 @@ alfred-reminders
 
 This creates a new reminder in Reminders.app
 
-Download the latest version, for Alfred v3 and macOS
+[Download the latest version](), for Alfred v3 and macOS
 
 More information at [Alfred Forums](http://www.alfredforum.com/topic/917-reminders/)
 
@@ -85,3 +85,5 @@ In Alfred create a new Blank Workflow, then right-click and choose Open In Finde
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
+
+Updates via [OneUpdater](https://github.com/vitorgalvao/alfred-workflows/tree/master/OneUpdater)

@@ -30,6 +30,16 @@
 				<key>vitoclose</key>
 				<false/>
 			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>DF47C07B-3990-4258-9ADD-9750C97514B2</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
 		</array>
 		<key>9B74DEE8-5782-4018-AEED-4292720A1DD2</key>
 		<array>
@@ -95,6 +105,80 @@
 			<string>9B74DEE8-5782-4018-AEED-4292720A1DD2</string>
 			<key>version</key>
 			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>function run(argv) {
+	var query = argv[0];
+
+	ObjC.import('stdlib');
+	var reminders = JSON.parse($.getenv('reminders'));
+	//console.log(reminders);
+
+
+	// get the actioned item
+	reminderData = reminders.find(function (r) {
+		return r.arg == query;
+	});
+	//console.log(reminderData);
+
+	return createReminder(reminderData, $.getenv('defaultList'));
+}
+
+function createReminder(reminderData, defaultList) {
+	var Reminders = Application('Reminders');
+	try {
+		data = {name:reminderData['text']}
+		console.log("Name:" + data['name'])
+		if(reminderData['body']) {
+			data['body'] = reminderData['body'];
+		}
+		if(reminderData['date']) {
+			data['remindMeDate'] = new Date(reminderData['date'])
+			console.log("Date:" + data['date']);
+		}
+		if(reminderData['priority']) {
+			data['priority'] = parseInt(reminderData['priority']);
+		}
+		if(reminderData['list'] &amp;&amp; Reminders.lists.whose({name:reminderData['list']}).length) {
+			// list provided by query
+			reminderList = Reminders.lists.whose({name:reminderData['list']})[0];
+		} else if(defaultList &amp;&amp; Reminders.lists.whose({name:defaultList}).length) {
+			// list provided by worklow variable
+			reminderList = Reminders.lists.whose({name:defaultList})[0];
+		} else {
+			// default list provided by application
+			reminderList = Reminders.defaultList();
+		}
+		//console.log(reminder);
+		reminder = Reminders.Reminder(data);
+		reminderList.reminders.push(reminder);
+		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
+		return "Created reminder: " + data['name'];
+	} catch (e) {
+		console.log(e);
+		return e;
+	}
+}</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>7</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -416,80 +500,6 @@ function getReminderData(options) {
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>68</integer>
-				<key>script</key>
-				<string>function run(argv) {
-	var query = argv[0];
-
-	ObjC.import('stdlib');
-	var reminders = JSON.parse($.getenv('reminders'));
-	//console.log(reminders);
-
-
-	// get the actioned item
-	reminderData = reminders.find(function (r) {
-		return r.arg == query;
-	});
-	//console.log(reminderData);
-
-	return createReminder(reminderData, $.getenv('defaultList'));
-}
-
-function createReminder(reminderData, defaultList) {
-	var Reminders = Application('Reminders');
-	try {
-		data = {name:reminderData['text']}
-		console.log("Name:" + data['name'])
-		if(reminderData['body']) {
-			data['body'] = reminderData['body'];
-		}
-		if(reminderData['date']) {
-			data['remindMeDate'] = new Date(reminderData['date'])
-			console.log("Date:" + data['date']);
-		}
-		if(reminderData['priority']) {
-			data['priority'] = parseInt(reminderData['priority']);
-		}
-		if(reminderData['list'] &amp;&amp; Reminders.lists.whose({name:reminderData['list']}).length) {
-			// list provided by query
-			reminderList = Reminders.lists.whose({name:reminderData['list']})[0];
-		} else if(defaultList &amp;&amp; Reminders.lists.whose({name:defaultList}).length) {
-			// list provided by worklow variable
-			reminderList = Reminders.lists.whose({name:defaultList})[0];
-		} else {
-			// default list provided by application
-			reminderList = Reminders.defaultList();
-		}
-		//console.log(reminder);
-		reminder = Reminders.Reminder(data);
-		reminderList.reminders.push(reminder);
-		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
-		return "Created reminder: " + data['name'];
-	} catch (e) {
-		console.log(e);
-		return e;
-	}
-}</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>7</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>lastpathcomponent</key>
 				<false/>
 				<key>onlyshowifquerypopulated</key>
@@ -522,7 +532,7 @@ Variables: {allvars}</string>
 			<key>type</key>
 			<string>alfred.workflow.utility.debug</string>
 			<key>uid</key>
-			<string>8AD0B8E1-2FF7-48C0-AF64-5BF7C0D23024</string>
+			<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -540,9 +550,89 @@ Variables: {allvars}</string>
 			<key>type</key>
 			<string>alfred.workflow.utility.debug</string>
 			<key>uid</key>
-			<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
+			<string>8AD0B8E1-2FF7-48C0-AF64-5BF7C0D23024</string>
 			<key>version</key>
 			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>readonly remote_info_plist='https://github.com/surrealroad/alfred-reminders/raw/master/info.plist' # URL of remote info.plist
+readonly workflow_url='https://github.com/surrealroad/alfred-reminders/raw/master/Reminders.alfredworkflow' # URL to directly download workflow or workflow download page
+readonly workflow_type='workflow' # Either 'workflow' if workflow_url points to direct download, or 'page' if it points to download page
+readonly frequency_check='15' # Days between update checks
+
+# FROM HERE ON, CODE SHOULD BE LEFT UNTOUCHED UNLESS YOU KNOW WHAT YOU ARE DOING
+function abort {
+  echo "${1}" &gt;&amp;2
+  exit 1
+}
+
+function url_exists {
+  curl --silent --location --output /dev/null --fail --range 0-0 "${1}"
+}
+
+function notification {
+  local readonly terminal_notifier="$(find . -name terminal-notifier.app)"
+
+  if [[ -n "${terminal_notifier}" ]]; then
+    "${terminal_notifier}"/Contents/MacOS/terminal-notifier -title "${alfred_workflow_name}" -subtitle 'A new version is available' -message "${1}"
+  else
+    osascript -e "display notification \"${1}\" with title \"${alfred_workflow_name}\" subtitle \"A new version is available\""
+  fi
+}
+
+# Local sanity checks
+readonly local_info_plist='info.plist'
+readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
+
+[[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
+[[ "${workflow_type}" =~ ^(workflow|page)$ ]] || abort "'workflow_type' (${workflow_type}) needs to be one of 'workflow' or 'page'."
+[[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
+
+# Check for updates
+if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
+  if ! url_exists "${remote_info_plist}"; then abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."; fi # Remote sanity check
+
+  readonly tmp_file="$(mktemp)"
+  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
+  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
+
+  if [[ "${local_version}" != "${remote_version}" ]]; then
+    if [[ "${workflow_type}" == 'page' ]]; then
+      notification 'Opening download page…'
+      open "${workflow_url}"
+    else
+      if url_exists "${workflow_url}"; then
+        notification 'Downloading and installing…'
+        curl --silent --location --output "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow" "${workflow_url}"
+        open "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow"
+      else
+        abort "'workflow_url' (${workflow_url}) appears to not be reachable."
+      fi # url_exists
+    fi # workflow_type
+  else
+    touch "${local_info_plist}" # Reset timer by touching local file
+  fi # diff
+fi #find</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>DF47C07B-3990-4258-9ADD-9750C97514B2</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -636,6 +726,7 @@ Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
  
 Changelog:
+v70 (Friday, 3 March 2017) – Added OneUpdater
 v69 (Tuesday, 3 January 2017) – Added support for different lists
 v68 (Friday, 9 December 2016) – Added remaining app handlers, escaped paths
 v67 (Thursday, 8 December 2016) – Added support for app-secific reminders
@@ -747,6 +838,17 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>ypos</key>
 			<integer>230</integer>
 		</dict>
+		<key>DF47C07B-3990-4258-9ADD-9750C97514B2</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>note</key>
+			<string>OneUpdater</string>
+			<key>xpos</key>
+			<integer>650</integer>
+			<key>ypos</key>
+			<integer>580</integer>
+		</dict>
 		<key>E5B72F9E-C243-4876-B6BB-4C79008E62D0</key>
 		<dict>
 			<key>colorindex</key>
@@ -763,7 +865,7 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>69</string>
+	<string>70</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
