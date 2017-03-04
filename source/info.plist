@@ -843,7 +843,8 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>colorindex</key>
 			<integer>12</integer>
 			<key>note</key>
-			<string>OneUpdater</string>
+			<string>OneUpdater
+Provides automatic updating</string>
 			<key>xpos</key>
 			<integer>650</integer>
 			<key>ypos</key>
@@ -855,7 +856,6 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<integer>6</integer>
 			<key>note</key>
 			<string>TODO:
-• Auto-update support
 • "help" keyword
 • Quit reminders automatically</string>
 			<key>xpos</key>
