@@ -16,6 +16,8 @@ You can also include times and dates in the text and have Alfred set a reminder 
 
 `r this` will capture the current application and turn it into a reminder.
 
+`r help` will show some built-in examples.
+
 ### Dates
 To be reminded at a specific date/time, simply type a date into the command, for example:
 
@@ -26,7 +28,7 @@ To be reminded at a specific date/time, simply type a date into the command, for
 - `r on 24/12/13 forget everything I know about things in movies`
 - `r on 12 June 15 come up with some interesting ideas`
 - `r on 31-12-99 23:22 panic about the millennium bug`
-- `r at 2pm to wait for nothing in particular`
+- `r at 2pm wait for nothing in particular`
 - `r next thursday at 15.30 ask some difficult questions`
 
 ### Priority
