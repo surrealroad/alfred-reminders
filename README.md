@@ -3,7 +3,7 @@ alfred-reminders
 
 This creates a new reminder in Reminders.app
 
-[Download the latest version](), for Alfred v3 and macOS
+[Download the latest version](https://github.com/surrealroad/alfred-reminders/releases/latest), for Alfred v3 and macOS
 
 More information at [Alfred Forums](http://www.alfredforum.com/topic/917-reminders/)
 

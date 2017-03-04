@@ -562,7 +562,7 @@ Variables: {allvars}</string>
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>script</key>
-				<string>readonly remote_info_plist='https://github.com/surrealroad/alfred-reminders/raw/master/info.plist' # URL of remote info.plist
+				<string>readonly remote_info_plist='https://github.com/surrealroad/alfred-reminders/raw/master/source/info.plist' # URL of remote info.plist
 readonly workflow_url='https://github.com/surrealroad/alfred-reminders/raw/master/Reminders.alfredworkflow' # URL to directly download workflow or workflow download page
 readonly workflow_type='workflow' # Either 'workflow' if workflow_url points to direct download, or 'page' if it points to download page
 readonly frequency_check='15' # Days between update checks
