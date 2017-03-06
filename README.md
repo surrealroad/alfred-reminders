@@ -83,7 +83,7 @@ If you want to change the default reminder list, edit the variables component at
 ### Building from source
 In Alfred create a new Blank Workflow, then right-click and choose Open In Finder. Then replace all the files with this source.
 
-## Acknowlegdements
+## Acknowledgements
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
