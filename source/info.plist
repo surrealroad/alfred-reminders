@@ -12,7 +12,7 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>E5B72F9E-C243-4876-B6BB-4C79008E62D0</string>
+				<string>9C5CBE5A-08CB-4CEB-BCAE-4C1004408F30</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -22,7 +22,7 @@
 			</dict>
 			<dict>
 				<key>destinationuid</key>
-				<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
+				<string>E5B72F9E-C243-4876-B6BB-4C79008E62D0</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -40,12 +40,35 @@
 				<key>vitoclose</key>
 				<false/>
 			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
 		</array>
 		<key>9B74DEE8-5782-4018-AEED-4292720A1DD2</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
 				<string>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>9C5CBE5A-08CB-4CEB-BCAE-4C1004408F30</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9E75FCF7-24AE-46AC-869F-BA9DC4B00A00</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -85,9 +108,45 @@
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Reminders for Alfred 3 (Beta)</string>
+	<string>Reminders for Alfred 3</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>applescript</key>
+				<string>on alfred_script(q)
+  tell application "Reminders" to quit
+end alfred_script</string>
+				<key>cachescript</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.applescript</string>
+			<key>uid</key>
+			<string>9E75FCF7-24AE-46AC-869F-BA9DC4B00A00</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>inputstring</key>
+				<string>{var:quitAfter}</string>
+				<key>matchcasesensitive</key>
+				<true/>
+				<key>matchmode</key>
+				<integer>0</integer>
+				<key>matchstring</key>
+				<string>true</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.filter</string>
+			<key>uid</key>
+			<string>9C5CBE5A-08CB-4CEB-BCAE-4C1004408F30</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -209,7 +268,8 @@ var window = {} // required for chrono.js to function properly, see https://gith
 function run(argv) {
 	var query = argv[0],
 		results = {},
-		jsonResult = {};
+		jsonResult = {},
+		shouldQuit = !isRemindersRunning();
 		
 	if(query == "help") {
 		results = showHelpItems();
@@ -218,8 +278,15 @@ function run(argv) {
 	}
 	
 	jsonResult['items'] = results['items'];
-	jsonResult['variables'] = {"reminders":JSON.stringify(results['reminders'])};
+	jsonResult['variables'] = {
+		"reminders":JSON.stringify(results['reminders']),
+		"quitAfter":JSON.stringify(shouldQuit)
+	};
 	return JSON.stringify(jsonResult);
+}
+
+function isRemindersRunning() {
+	return Application('Reminders').running();
 }
 
 // returns a dictionary corresponding to an Alfred action item
@@ -581,42 +648,6 @@ function showHelpItems() {
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argument</key>
-				<string>Output from Script: '{query}'
-Variables: {allvars}</string>
-				<key>cleardebuggertext</key>
-				<false/>
-				<key>processoutputs</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.utility.debug</string>
-			<key>uid</key>
-			<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argument</key>
-				<string>Output from Script: '{query}'
-Variables: {allvars}</string>
-				<key>cleardebuggertext</key>
-				<false/>
-				<key>processoutputs</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.utility.debug</string>
-			<key>uid</key>
-			<string>8AD0B8E1-2FF7-48C0-AF64-5BF7C0D23024</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
@@ -693,6 +724,42 @@ fi #find</string>
 			<string>DF47C07B-3990-4258-9ADD-9750C97514B2</string>
 			<key>version</key>
 			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argument</key>
+				<string>Output from Script: '{query}'
+Variables: {allvars}</string>
+				<key>cleardebuggertext</key>
+				<false/>
+				<key>processoutputs</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.debug</string>
+			<key>uid</key>
+			<string>7C61BE1C-BE82-42B1-A275-DDECED8286B9</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argument</key>
+				<string>Output from Script: '{query}'
+Variables: {allvars}</string>
+				<key>cleardebuggertext</key>
+				<false/>
+				<key>processoutputs</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.debug</string>
+			<key>uid</key>
+			<string>8AD0B8E1-2FF7-48C0-AF64-5BF7C0D23024</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -780,12 +847,15 @@ If you want to change the default reminder list, edit the variables component at
 In Alfred create a new Blank Workflow, then right-click and choose Open In Finder. Then replace all the files with this source.
 
 ## Acknowlegdements
-Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
+Date parsing is done via chrono.js (https://github.com/wanasit/chrono)
 
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
+Updates via OneUpdater (https://github.com/vitorgalvao/alfred-workflows/tree/master/OneUpdater)
+
  
 Changelog:
+v72 (Monday, 6 March 2017) – Quit reminders if needed when complete
 v71 (Saturday, 4 March 2017) – Added built-in help
 v70 (Friday, 3 March 2017) – Added OneUpdater
 v69 (Tuesday, 3 January 2017) – Added support for different lists
@@ -864,9 +934,9 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>note</key>
 			<string>Show debugger to see output from Run Script</string>
 			<key>xpos</key>
-			<integer>670</integer>
+			<integer>650</integer>
 			<key>ypos</key>
-			<integer>440</integer>
+			<integer>410</integer>
 		</dict>
 		<key>8AD0B8E1-2FF7-48C0-AF64-5BF7C0D23024</key>
 		<dict>
@@ -875,9 +945,9 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<key>note</key>
 			<string>Show debugger to see output from Script Filter</string>
 			<key>xpos</key>
-			<integer>480</integer>
+			<integer>470</integer>
 			<key>ypos</key>
-			<integer>440</integer>
+			<integer>410</integer>
 		</dict>
 		<key>9B74DEE8-5782-4018-AEED-4292720A1DD2</key>
 		<dict>
@@ -887,6 +957,28 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<integer>320</integer>
 			<key>ypos</key>
 			<integer>120</integer>
+		</dict>
+		<key>9C5CBE5A-08CB-4CEB-BCAE-4C1004408F30</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>7</integer>
+			<key>note</key>
+			<string>Decides whether to quit Reminders at the end</string>
+			<key>xpos</key>
+			<integer>650</integer>
+			<key>ypos</key>
+			<integer>110</integer>
+		</dict>
+		<key>9E75FCF7-24AE-46AC-869F-BA9DC4B00A00</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>7</integer>
+			<key>note</key>
+			<string>This action causes Reminders to quit</string>
+			<key>xpos</key>
+			<integer>750</integer>
+			<key>ypos</key>
+			<integer>80</integer>
 		</dict>
 		<key>B3DC4BDA-18AF-4BC9-B6FD-5AC43239F9A0</key>
 		<dict>
@@ -907,25 +999,22 @@ Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/li
 			<string>OneUpdater
 Provides automatic updating</string>
 			<key>xpos</key>
-			<integer>650</integer>
+			<integer>750</integer>
 			<key>ypos</key>
-			<integer>580</integer>
+			<integer>350</integer>
 		</dict>
 		<key>E5B72F9E-C243-4876-B6BB-4C79008E62D0</key>
 		<dict>
 			<key>colorindex</key>
 			<integer>6</integer>
-			<key>note</key>
-			<string>TODO:
-• Quit reminders automatically</string>
 			<key>xpos</key>
-			<integer>640</integer>
+			<integer>750</integer>
 			<key>ypos</key>
 			<integer>230</integer>
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>71</string>
+	<string>72</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
