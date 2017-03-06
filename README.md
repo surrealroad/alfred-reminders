@@ -1,49 +1,91 @@
 alfred-reminders
 ================
 
-This creates a new reminder in reminders.app
+This creates a new reminder in Reminders.app
 
-Download the latest version, for Alfred v3 -> http://bit.ly/1UlcR8F
+[Download the latest version](https://github.com/surrealroad/alfred-reminders/releases/latest), for Alfred v3 and macOS
 
-For Alfred v2 -> http://bit.ly/10uCE2J
+More information at [Alfred Forums](http://www.alfredforum.com/topic/917-reminders/)
 
-More information at http://www.alfredforum.com/topic/917-reminders/
- 
-To use, just type "r reminder_text" into Alfred. E.g. "r check out some of Alfred's other workflows" to find an existing reminder with the search text, or to create a new one.
-Actioning an existing reminder marks it as complete.
-Hold option to view the new/existing reminder in Reminders.app, hold control to delete it.
+## Usage
+To use, just type `r <some text>` into Alfred.
 
-To set a reminder for a specific date, use any of the following commands:
-- r today release the hamsters into the wild
-- r tomorrow bring about financial ruin upon my enemies
-- r in 5 minutes drop everything
-- r in 2 hours laugh out loud in random thoughts list
-- r in 3 days 1 hour pick stuff up off the floor
-- r on 24/12/13 to forget everything I know about things in movies
-- r on 12 June 15 to come up with some interesting ideas
-- r on 11 12 13 to check what the weather's like
-- r on 31-12-99 23:22 to panic about the millennium bug
-- r at 2pm to wait for nothing in particular
-- r thursday at 15.30 to ask some difficult questions
+For example, `r check out some of Alfred's other workflows` will create a new reminder called "check out some of Alfred's other workflows". 
 
-"r all" will show all current reminders
+You can also include times and dates in the text and have Alfred set a reminder for that particular time.
 
-"r refresh" will show all current reminders and refresh the list
+`r this` will capture the current application and turn it into a reminder.
 
-"r this" will capture the current application and turn it into a reminder
+`r help` will show some built-in examples.
+
+### Dates
+To be reminded at a specific date/time, simply type a date into the command, for example:
+
+- `r today release the hamsters into the wild`
+- `r tomorrow bring about financial ruin upon my enemies`
+- `r in 5 minutes drop everything`
+- `r in 2 hours laugh out loud`
+- `r on 24/12/13 forget everything I know about things in movies`
+- `r on 12 June 15 come up with some interesting ideas`
+- `r on 31-12-99 23:22 panic about the millennium bug`
+- `r at 2pm wait for nothing in particular`
+- `r next thursday at 15.30 ask some difficult questions`
+
+### Priority
+
+To set the priority of the reminder, either use exclamation marks right at the start or end of the command (`!` for low priority, `!!` for medium priority, `!!!` for high priority), or type the priority right at the end of the command (these can also be abbreviated, for example `mp` or `p lo`). For example:
+
+- `r !!! in 2 weeks an important meeting`
+- `r thursday have a banana medium priority`
+- `r decide what to have for lunch !lo`
+- `r make a turkey sandwich p3`
+
+### Lists
+
+To choose a list to use on a per-reminder basis, type `in <list name> list` right at the end of the command, for example `r Get Santa outfit !2 in Christmas list`. If a matching list can't be found, you won't be able to action the command.
+
+In all other cases, the default Reminders list will be used (typically the first one). If you prefer, you can edit the `defaultList` variable within the workflow's Arg and Vars node (note that you'll have to edit this each time you upgrade the workflow however).
+
+### Apps
+Get reminded about the app you're using, for example the selected file in Finder, or the current tab in Chrome or Safari.
+
+To create a reminder about the active app, simply type `r this`. Or keep typing to set a date, priority or a custom title, for example `r this drop some sick beats on Friday !!!`.
+
+The following apps are currently supported:
+
+- Adobe Acrobat (Pro/DX)
+- Chromium
+- Contacts
+- Finder
+- FoldingText
+- Google Chrome
+- Google Chrome Canary
+- Mail
+- Microsoft PowerPoint
+- Microsoft Word
+- Safari
+- TextEdit
+- TextMate
+- Vienna
+- WebKit
+
+Apps can be added on request. Just [raise an issue](https://github.com/surrealroad/alfred-reminders/issues/new) with the app you use. As long as it's freely available and has AppleScript support, it can be added.
+
+### Getting help
+
+`r help` will display the above examples
 
 All sorts of combinations are possible!
 
-"r help" will display the above examples
+### Configuration
+If you want to change the default reminder list, edit the variables component at the top of the workflow, otherwise it will just use the first one (unless you use "in Y list" at the end).
 
-"r overdue" will display reminders which are overdue
+### Building from source
+In Alfred create a new Blank Workflow, then right-click and choose Open In Finder. Then replace all the files with this source.
 
-The order of d/m/y (as well as HH:mm) I believe will depend on your region settings in the OS.
- 
-If you want to change the default reminder list, edit the applescript property at the top, otherwise it will just use the first one (unless you use "in Y list" at the end).
-
-Uses AppleScript implementation of the Workflow object class for Alfred 2 (https://github.com/qlassiqa/qWorkflow)
+## Acknowlegdements
+Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
-Uses Brati's Lover Property List Library (http://applescript.bratis-lover.net/library/plist/)
+Updates via [OneUpdater](https://github.com/vitorgalvao/alfred-workflows/tree/master/OneUpdater)
