@@ -68,6 +68,7 @@ The following apps are currently supported:
 - TextMate
 - Vienna
 - WebKit
+- Mailplane 3
 
 Apps can be added on request. Just [raise an issue](https://github.com/surrealroad/alfred-reminders/issues/new) with the app you use. As long as it's freely available and has AppleScript support, it can be added.
 
