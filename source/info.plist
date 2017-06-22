@@ -547,6 +547,12 @@ function parseReminderQuery(query) {
 	for (var i = 0; i &lt; results.length; i++) {
 		resultText = query.replace(results[i].text,'');
 		var d = results[i].start.date(); // Create a Date object
+
+		// If date is in past, assume 'tomorrow' was implied
+		if (d < now) {
+			d.setDate(now.getDate() + 1);
+		}
+
 		var reminderText = resultText.trim();
 		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority, reminderList:reminderList}));
 		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, list:"", priority:priority, application:application, reminderList:reminderList}));
