@@ -543,10 +543,15 @@ function parseReminderQuery(query) {
   }
 
 	results = window.chrono.parse(query);
+	var now = new Date();
 	
 	for (var i = 0; i &lt; results.length; i++) {
 		resultText = query.replace(results[i].text,'');
 		var d = results[i].start.date(); // Create a Date object
+		// If date is in the past, assume intended date is tomorrow
+		if (d &lt; now) {
+			d.setDate(now.getDate() + 1);
+		}
 		var reminderText = resultText.trim();
 		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority, reminderList:reminderList}));
 		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, list:"", priority:priority, application:application, reminderList:reminderList}));
