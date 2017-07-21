@@ -61,6 +61,7 @@ The following apps are currently supported:
 - Google Chrome
 - Google Chrome Canary
 - Mail
+- Mailplane 3
 - Microsoft PowerPoint
 - Microsoft Word
 - Safari
@@ -68,7 +69,6 @@ The following apps are currently supported:
 - TextMate
 - Vienna
 - WebKit
-- Mailplane 3
 
 Apps can be added on request. Just [raise an issue](https://github.com/surrealroad/alfred-reminders/issues/new) with the app you use. As long as it's freely available and has AppleScript support, it can be added.
 
@@ -80,6 +80,12 @@ All sorts of combinations are possible!
 
 ### Configuration
 If you want to change the default reminder list, edit the variables component at the top of the workflow, otherwise it will just use the first one (unless you use "in Y list" at the end).
+
+### External trigger
+To call the workflow as an external trigger, use applescript such as
+```
+tell application "Alfred 3" to run trigger "remind" in workflow "com.surrealroad.alfred-reminder" with argument "something tomorrow at 5pm"
+```
 
 ### Building from source
 In Alfred create a new Blank Workflow, then right-click and choose Open In Finder. Then replace all the files with this source.
