@@ -669,7 +669,7 @@ function getAction(options) {
     subtitle = "Create a new reminder";
 
   if(options['reminderText']) subtitle += " to \"" + options['reminderText'] + "\"";
-  else if(options['application']['text']) subtitle += " about \"" + options['application']['text'] + "\"";
+  else if(options['application'] &amp;&amp; options['application']['text']) subtitle += " about \"" + options['application']['text'] + "\"";
 
   if(options['date']) {
     subtitle += " on " + options['date'].toString();
@@ -1431,6 +1431,7 @@ Updates via OneUpdater (https://github.com/vitorgalvao/alfred-workflows/tree/mas
 
  
 Changelog:
+v74 (Thursday, 3 August 2017) – Fixed an issue where impartial queries did not get parsed (thanks Nibblesh!)
 v73 (Friday, 21 July 2017) - Added support for Mailplane 3 (thanks devguydavid!), ensure dates are always in the future (thanks saeedmahani!), added external trigger
 v72 (Monday, 6 March 2017) – Quit reminders if needed when complete
 v71 (Saturday, 4 March 2017) – Added built-in help
@@ -1627,7 +1628,7 @@ Reduce code duplication</string>
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>73</string>
+	<string>74</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
