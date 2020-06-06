@@ -604,6 +604,10 @@ function showHelpItems() {
 			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -990,7 +994,7 @@ function showHelpItems() {
 			<key>uid</key>
 			<string>B3DC4BDA-18AF-4BC9-B6FD-5AC43239F9A0</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1061,7 +1065,7 @@ function createReminder(reminderData, defaultList) {
 			reminderList = Reminders.lists.whose({name:defaultList})[0];
 		} else {
 			// default list provided by application
-			reminderList = Reminders.defaultList();
+			reminderList = Reminders.defaultList;
 		}
 		//console.log(reminder);
 		reminder = Reminders.Reminder(data);
@@ -1627,6 +1631,8 @@ Reduce code duplication</string>
 			<integer>80</integer>
 		</dict>
 	</dict>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
 	<string>74</string>
 	<key>webaddress</key>
