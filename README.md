@@ -60,6 +60,7 @@ The following apps are currently supported:
 - FoldingText
 - Google Chrome
 - Google Chrome Canary
+- Brave Browser
 - Mail
 - Mailplane 3
 - Microsoft PowerPoint

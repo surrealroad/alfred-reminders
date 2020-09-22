@@ -1153,6 +1153,12 @@ function createReminder(reminderData, defaultList) {
             "reminderBody" : "Application('Google Chrome Canary').windows[0].activeTab.url();"
           },
           {
+            "reminderText" : "Application('Brave Browser').windows[0].activeTab.title();",
+            "icon" : "Brave Browser.png",
+            "appname" : "Brave Browser",
+            "reminderBody" : "Application('Brave Browser').windows[0].activeTab.url();"
+          },
+          {
             "reminderText" : "Application('Mailplane 3').currenttitle()",
             "icon" : "Mailplane 3.png",
             "appname" : "Mailplane 3",
