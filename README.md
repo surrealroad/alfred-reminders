@@ -1,6 +1,8 @@
 alfred-reminders
 ================
 
+**This repo is no longer actively developed. I will review pull requests but not respond to issues or requests. Unfortunately I have been unable to keep up with the changes Apple makes to reminders in every OS release without warning.**
+
 This creates a new reminder in Reminders.app
 
 [Download the latest version](https://github.com/surrealroad/alfred-reminders/releases/latest), for Alfred v3 and macOS
