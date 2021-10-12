@@ -367,15 +367,16 @@ function parseReminderQuery(query) {
 		{appname:"Microsoft Edge", icon:"Edge.png", reminderText:'Application("Microsoft Edge").windows[0].activeTab.title();', reminderBody:'Application("Microsoft Edge").windows[0].activeTab.url();'},
 		{appname:"Google Chrome", icon:"Chrome.png", reminderText:'Application("Google Chrome").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome").windows[0].activeTab.url();'},
 		{appname:"Google Chrome Canary", icon:"Chrome Canary.png",  reminderText:'Application("Google Chrome Canary").windows[0].activeTab.title();', reminderBody:'Application("Google Chrome Canary").windows[0].activeTab.url();'},
-        {appname:"Mailplane", icon:"Mailplane.png", reminderText:'Application("Mailplane").currenttitle()', reminderBody:'Application("MailPlane").currentmessagetext()'},
+		{appname:"Mailplane", icon:"Mailplane.png", reminderText:'Application("Mailplane").currenttitle()', reminderBody:'Application("MailPlane").currentmessagetext()'},
 		{appname:"Mail", icon:"Mail.png",  reminderText:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; m.subject() + " (From " + m.sender() + ")"', reminderBody:'var m = Application("Mail").selection()[Application("Mail").selection().length-1]; "message://<" + m.messageId() + ">"'},
-  	    {appname:"Microsoft PowerPoint", icon:"Powerpoint.png", reminderText:'Application("Microsoft PowerPoint").activePresentation.name()', reminderBody:'var p = Application("Microsoft PowerPoint").activePresentation.fullName(); if(p) "file://" + escape(p)'},
+		{appname:"Microsoft PowerPoint", icon:"Powerpoint.png", reminderText:'Application("Microsoft PowerPoint").activePresentation.name()', reminderBody:'var p = Application("Microsoft PowerPoint").activePresentation.fullName(); if(p) "file://" + escape(p)'},
 		{appname:"Microsoft Word", icon:"MSWord.png", reminderText:'Application("Microsoft Word").activeDocument.name()', reminderBody:'var p = Application("Microsoft Word").activeDocument.posixFullName(); if(p) "file://" + escape(p)'},
-  	    {appname:"Safari", icon:"Safari.png", reminderText:'Application("Safari").windows[0].currentTab.name();', reminderBody:'Application("Safari").windows[0].currentTab.url();'},
+		{appname:"Microsoft Excel", icon:"Excel.png", reminderText:'Application("Microsoft Excel").activeDocument.name()', reminderBody:'var p = Application("Microsoft Excel").activeDocument.posixFullName(); if(p) "file://" + escape(p)'},
+		{appname:"Safari", icon:"Safari.png", reminderText:'Application("Safari").windows[0].currentTab.name();', reminderBody:'Application("Safari").windows[0].currentTab.url();'},
 		{appname:"TextEdit", icon:"TextEdit.png", reminderText:'Application("TextEdit").documents[0].name()', reminderBody:'var p = Application("TextEdit").documents[0].path(); if(p) "file://" + escape(p)'},
 		{appname:"TextMate", icon:"TextMate.png", reminderText:'Application("TextMate").documents[0].name()', reminderBody:'var p = Application("TextMate").documents[0].path(); if(p) "file://" + escape(p)'},
 		{appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
-  	    {appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
+		{appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
   ]
   	if(! window.chrono) {
 		//https://github.com/dtinth/JXA-Cookbook/wiki/Importing-Scripts
