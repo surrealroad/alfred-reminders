@@ -3,7 +3,7 @@ alfred-reminders
 
 **This repo is no longer actively developed. I will review pull requests but not respond to issues or requests. Unfortunately I have been unable to keep up with the changes Apple makes to reminders in every OS release without warning.**
 
-This creates a new reminder in Reminders.app
+This creates a new reminder in Apple Reminders
 
 [Download the latest version](https://github.com/surrealroad/alfred-reminders/releases/latest), for Alfred v3 and macOS
 
@@ -33,7 +33,7 @@ To be reminded at a specific date/time, simply type a date into the command, for
 - `r at 2pm wait for nothing in particular`
 - `r next thursday at 15.30 ask some difficult questions`
 
-### Priority
+### Priority - Fixed
 
 To set the priority of the reminder, either use exclamation marks right at the start or end of the command (`!` for low priority, `!!` for medium priority, `!!!` for high priority), or type the priority right at the end of the command (these can also be abbreviated, for example `mp` or `p lo`). For example:
 
@@ -44,7 +44,7 @@ To set the priority of the reminder, either use exclamation marks right at the s
 
 ### Lists
 
-To choose a list to use on a per-reminder basis, type `in <list name> list` right at the end of the command, for example `r Get Santa outfit !2 in Christmas list`. If a matching list can't be found, you won't be able to action the command.
+To choose a list to use on a per-reminder basis, type `in <list name> list` right at the end of the command, for example `r Get Santa outfit !2 in Christmas list`. For single-word lists you can now use the shortcut `@ <list name>`. If a matching list can't be found, you won't be able to action the command.
 
 In all other cases, the default Reminders list will be used (typically the first one). If you prefer, you can edit the `defaultList` variable within the workflow's Arg and Vars node (note that you'll have to edit this each time you upgrade the workflow however).
 
@@ -55,18 +55,20 @@ To create a reminder about the active app, simply type `r this`. Or keep typing 
 
 The following apps are currently supported:
 
-- Adobe Acrobat (Pro/DX)
+- AdobeAcrobat
 - Chromium
 - Contacts
 - Finder
 - FoldingText
+- Brave Browser
+- Microsoft Edge
 - Google Chrome
 - Google Chrome Canary
-- Brave Browser
+- Mailplane
 - Mail
-- Mailplane 3
 - Microsoft PowerPoint
 - Microsoft Word
+- Microsoft Excel
 - Safari
 - TextEdit
 - TextMate
@@ -84,10 +86,12 @@ All sorts of combinations are possible!
 ### Configuration
 If you want to change the default reminder list, edit the variables component at the top of the workflow, otherwise it will just use the first one (unless you use "in Y list" at the end).
 
+To reverse the priority so `p1` is the highest and `p3` is the lowest priority, change the `reverse_priority` under the **Workflow Environment Variables**.
+
 ### External trigger
 To call the workflow as an external trigger, use applescript such as
 ```
-tell application "Alfred 3" to run trigger "remind" in workflow "com.surrealroad.alfred-reminder" with argument "something tomorrow at 5pm"
+tell application "Alfred 4" to run trigger "remind" in workflow "com.surrealroad.alfred-reminder" with argument "something tomorrow at 5pm"
 ```
 
 ### Building from source
