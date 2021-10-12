@@ -2005,7 +2005,7 @@ Reduce code duplication</string>
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>74-ran</string>
+	<string>74</string>
 	<key>webaddress</key>
 	<string>https://github.com/surrealroad/alfred-reminders</string>
 </dict>
