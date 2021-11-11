@@ -1582,7 +1582,7 @@ Updates via OneUpdater (https://github.com/vitorgalvao/alfred-workflows/tree/mas
 
  
 Changelog:
-V76 (Thursday, 11 November 2021) - Add delay before quitting reminders to update notification center widget
+v76 (Thursday, 11 November 2021) - Add delay before quitting reminders to update notification center widget
 v75 (Tuesday, 12 October 2021) - Updated icons. Support for Edge and Brave browsers, and MS Excel for this. Fix priority (was no longer working). Option to use @ &lt;list name&gt; for single word lists. Hotkey added (default is ⌥+R). Option for reversed priority config (making p1 the highest and p3 the lowest) by changing the reverse_priority under the Workflow Environment Variables to 1
 v74 (Thursday, 3 August 2017) – Fixed an issue where impartial queries did not get parsed (thanks Nibblesh!)
 v73 (Friday, 21 July 2017) - Added support for Mailplane 3 (thanks devguydavid!), ensure dates are always in the future (thanks saeedmahani!), added external trigger
