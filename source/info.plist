@@ -114,7 +114,7 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>9E75FCF7-24AE-46AC-869F-BA9DC4B00A00</string>
+				<string>BF7066F5-26EA-4C0E-A9AA-3DD7D3CEC692</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -141,6 +141,19 @@
 			<dict>
 				<key>destinationuid</key>
 				<string>9B74DEE8-5782-4018-AEED-4292720A1DD2</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>BF7066F5-26EA-4C0E-A9AA-3DD7D3CEC692</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9E75FCF7-24AE-46AC-869F-BA9DC4B00A00</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -615,6 +628,19 @@ function showHelpItems() {
 			<string>alfred.workflow.utility.filter</string>
 			<key>uid</key>
 			<string>9C5CBE5A-08CB-4CEB-BCAE-4C1004408F30</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>seconds</key>
+				<string>{var:quit_delay}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.delay</string>
+			<key>uid</key>
+			<string>BF7066F5-26EA-4C0E-A9AA-3DD7D3CEC692</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1453,7 +1479,7 @@ Variables: {allvars}</string>
 	<string>alfred-reminders
 ================
 
-This creates a new reminder in Reminders.app
+This creates a new reminder in Apple Reminders
 
 Download the latest version, for Alfred v3 and macOS
 
@@ -1467,6 +1493,8 @@ For example, `r check out some of Alfred's other workflows` will create a new re
 You can also include times and dates in the text and have Alfred set a reminder for that particular time.
 
 `r this` will capture the current application and turn it into a reminder.
+
+`r help` will show some built-in examples.
 
 ### Dates
 To be reminded at a specific date/time, simply type a date into the command, for example:
@@ -1503,16 +1531,18 @@ To create a reminder about the active app, simply type `r this`. Or keep typing 
 
 The following apps are currently supported:
 
-- Adobe Acrobat (Pro/DX)
+- AdobeAcrobat
 - Chromium
 - Contacts
 - Finder
 - FoldingText
 - Google Chrome
 - Google Chrome Canary
+- Mailplane
 - Mail
 - Microsoft PowerPoint
 - Microsoft Word
+- Microsoft Excel
 - Safari
 - TextEdit
 - TextMate
@@ -1530,10 +1560,14 @@ All sorts of combinations are possible!
 ### Configuration
 If you want to change the default reminder list, edit the variables component at the top of the workflow, otherwise it will just use the first one (unless you use "in Y list" at the end).
 
+To reverse the priority so `p1` is the highest and `p3` is the lowest priority, change the `reverse_priority` under the **Workflow Environment Variables**.
+
+The workflow executes and quits Reminders.app and there is a delay before quitting app. (it requires some time to update notification center widget) Change the `quit_delay` under the **Workflow Environment Variables**, if you need.
+
 ### External trigger
 To call the workflow as an external trigger, use applescript such as
 ```
-tell application "Alfred 3" to run trigger "remind" in workflow "com.surrealroad.alfred-reminder" with argument "something tomorrow at 5pm"
+tell application "Alfred 4" to run trigger "remind" in workflow "com.surrealroad.alfred-reminder" with argument "something tomorrow at 5pm"
 ```
 
 ### Building from source
@@ -1548,6 +1582,8 @@ Updates via OneUpdater (https://github.com/vitorgalvao/alfred-workflows/tree/mas
 
  
 Changelog:
+v76 (Thursday, 11 November 2021) - Add delay before quitting reminders to update notification center widget
+v75 (Tuesday, 12 October 2021) - Updated icons. Support for Edge and Brave browsers, and MS Excel for this. Fix priority (was no longer working). Option to use @ &lt;list name&gt; for single word lists. Hotkey added (default is ⌥+R). Option for reversed priority config (making p1 the highest and p3 the lowest) by changing the reverse_priority under the Workflow Environment Variables to 1
 v74 (Thursday, 3 August 2017) – Fixed an issue where impartial queries did not get parsed (thanks Nibblesh!)
 v73 (Friday, 21 July 2017) - Added support for Mailplane 3 (thanks devguydavid!), ensure dates are always in the future (thanks saeedmahani!), added external trigger
 v72 (Monday, 6 March 2017) – Quit reminders if needed when complete
@@ -1690,7 +1726,7 @@ Understand why this doesn't get passed along</string>
 			<key>note</key>
 			<string>This action causes Reminders to quit</string>
 			<key>xpos</key>
-			<integer>840</integer>
+			<integer>975</integer>
 			<key>ypos</key>
 			<integer>80</integer>
 		</dict>
@@ -1716,6 +1752,15 @@ Understand why this doesn't get passed along</string>
 			<integer>220</integer>
 			<key>ypos</key>
 			<integer>230</integer>
+		</dict>
+		<key>BF7066F5-26EA-4C0E-A9AA-3DD7D3CEC692</key>
+		<dict>
+			<key>note</key>
+			<string>Give Reminders some time to update notification center widget</string>
+			<key>xpos</key>
+			<integer>865</integer>
+			<key>ypos</key>
+			<integer>110</integer>
 		</dict>
 		<key>DF47C07B-3990-4258-9ADD-9750C97514B2</key>
 		<dict>
@@ -1753,11 +1798,13 @@ Reduce code duplication</string>
 	</dict>
 	<key>variables</key>
 	<dict>
+		<key>quit_delay</key>
+		<string>2</string>
 		<key>reverse_priority</key>
 		<string>0</string>
 	</dict>
 	<key>version</key>
-	<string>74</string>
+	<string>76</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
