@@ -88,6 +88,8 @@ If you want to change the default reminder list, edit the variables component at
 
 To reverse the priority so `p1` is the highest and `p3` is the lowest priority, change the `reverse_priority` under the **Workflow Environment Variables**.
 
+The workflow executes and quits Reminders.app and there is a delay before quitting app. (it requires some time to update notification center widget) Change the `quit_delay` under the **Workflow Environment Variables**, if you need.
+
 ### External trigger
 To call the workflow as an external trigger, use applescript such as
 ```
