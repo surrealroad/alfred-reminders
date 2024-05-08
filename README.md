@@ -12,7 +12,7 @@ More information at [Alfred Forums](http://www.alfredforum.com/topic/917-reminde
 ## Usage
 To use, just type `r <some text>` into Alfred.
 
-For example, `r check out some of Alfred's other workflows` will create a new reminder called "check out some of Alfred's other workflows". 
+For example, `r check out some of Alfred's other workflows` will create a new reminder called "check out some of Alfred's other workflows".
 
 You can also include times and dates in the text and have Alfred set a reminder for that particular time.
 
@@ -33,7 +33,7 @@ To be reminded at a specific date/time, simply type a date into the command, for
 - `r at 2pm wait for nothing in particular`
 - `r next thursday at 15.30 ask some difficult questions`
 
-### Priority - Fixed
+### Priority
 
 To set the priority of the reminder, either use exclamation marks right at the start or end of the command (`!` for low priority, `!!` for medium priority, `!!!` for high priority), or type the priority right at the end of the command (these can also be abbreviated, for example `mp` or `p lo`). For example:
 
@@ -55,7 +55,7 @@ To create a reminder about the active app, simply type `r this`. Or keep typing 
 
 The following apps are currently supported:
 
-- AdobeAcrobat
+- Adobe Acrobat
 - Chromium
 - Contacts
 - Finder
@@ -101,5 +101,3 @@ In Alfred create a new Blank Workflow, then right-click and choose Open In Finde
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
-
-Updates via [OneUpdater](https://github.com/vitorgalvao/alfred-workflows/tree/master/OneUpdater)
