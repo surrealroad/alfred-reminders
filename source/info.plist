@@ -367,7 +367,7 @@ function parseReminderQuery(query) {
     {appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
     {appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
   ]
-  	if(! window.chrono) {
+	if(! window.chrono) {
 		//https://github.com/dtinth/JXA-Cookbook/wiki/Importing-Scripts
 
 		//http://www.alfredforum.com/topic/9070-how-to-workflowenvironment-variables/
@@ -386,7 +386,10 @@ function parseReminderQuery(query) {
 		var contents = fm.contentsAtPath(chronoPath); // NSData
 		contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
 
+		var module = {exports: {}};
+    	var exports = module.exports;
 		eval(ObjC.unwrap(contents));
+		window.chrono = module.exports;
 	}
 
 	// extract list
@@ -822,7 +825,7 @@ function parseReminderQuery(query) {
     {appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
     {appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
   ]
-  	if(! window.chrono) {
+	if(! window.chrono) {
 		//https://github.com/dtinth/JXA-Cookbook/wiki/Importing-Scripts
 
 		//http://www.alfredforum.com/topic/9070-how-to-workflowenvironment-variables/
@@ -841,7 +844,10 @@ function parseReminderQuery(query) {
 		var contents = fm.contentsAtPath(chronoPath); // NSData
 		contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
 
+		var module = {exports: {}};
+    	var exports = module.exports;
 		eval(ObjC.unwrap(contents));
+		window.chrono = module.exports;
 	}
 
 	// extract list
@@ -1294,86 +1300,6 @@ function createReminder(reminderData, defaultList) {
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>readonly remote_info_plist='https://github.com/surrealroad/alfred-reminders/raw/master/source/info.plist' # URL of remote info.plist
-readonly workflow_url='https://github.com/surrealroad/alfred-reminders/raw/master/Reminders.alfredworkflow' # URL to directly download workflow or workflow download page
-readonly workflow_type='workflow' # Either 'workflow' if workflow_url points to direct download, or 'page' if it points to download page
-readonly frequency_check='15' # Days between update checks
-
-# FROM HERE ON, CODE SHOULD BE LEFT UNTOUCHED UNLESS YOU KNOW WHAT YOU ARE DOING
-function abort {
-  echo "${1}" &gt;&amp;2
-  exit 1
-}
-
-function url_exists {
-  curl --silent --location --output /dev/null --fail --range 0-0 "${1}"
-}
-
-function notification {
-  local readonly terminal_notifier="$(find . -name terminal-notifier.app)"
-
-  if [[ -n "${terminal_notifier}" ]]; then
-    "${terminal_notifier}"/Contents/MacOS/terminal-notifier -title "${alfred_workflow_name}" -subtitle 'A new version is available' -message "${1}"
-  else
-    osascript -e "display notification \"${1}\" with title \"${alfred_workflow_name}\" subtitle \"A new version is available\""
-  fi
-}
-
-# Local sanity checks
-readonly local_info_plist='info.plist'
-readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
-
-[[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
-[[ "${workflow_type}" =~ ^(workflow|page)$ ]] || abort "'workflow_type' (${workflow_type}) needs to be one of 'workflow' or 'page'."
-[[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
-
-# Check for updates
-if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
-  if ! url_exists "${remote_info_plist}"; then abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."; fi # Remote sanity check
-
-  readonly tmp_file="$(mktemp)"
-  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
-  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
-
-  if [[ "${local_version}" != "${remote_version}" ]]; then
-    if [[ "${workflow_type}" == 'page' ]]; then
-      notification 'Opening download page…'
-      open "${workflow_url}"
-    else
-      if url_exists "${workflow_url}"; then
-        notification 'Downloading and installing…'
-        curl --silent --location --output "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow" "${workflow_url}"
-        open "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow"
-      else
-        abort "'workflow_url' (${workflow_url}) appears to not be reachable."
-      fi # url_exists
-    fi # workflow_type
-  else
-    touch "${local_info_plist}" # Reset timer by touching local file
-  fi # diff
-fi #find</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>DF47C07B-3990-4258-9ADD-9750C97514B2</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>argument</key>
 				<string>Output from Script: '{query}'
 Variables: {allvars}</string>
@@ -1538,65 +1464,66 @@ In Alfred create a new Blank Workflow, then right-click and choose Open In Finde
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
-Changelog:
-v75 (21 October 2021) – New icons + Support for: Edge, Brave, and MS Excel
-v74 (Thursday, 3 August 2017) – Fixed an issue where impartial queries did not get parsed (thanks Nibblesh!)
-v73 (Friday, 21 July 2017) - Added support for Mailplane 3 (thanks devguydavid!), ensure dates are always in the future (thanks saeedmahani!), added external trigger
-v72 (Monday, 6 March 2017) – Quit reminders if needed when complete
-v71 (Saturday, 4 March 2017) – Added built-in help
-v70 (Friday, 3 March 2017) – Added OneUpdater
-v69 (Tuesday, 3 January 2017) – Added support for different lists
-v68 (Friday, 9 December 2016) – Added remaining app handlers, escaped paths
-v67 (Thursday, 8 December 2016) – Added support for app-secific reminders
-v66 (Thursday, 8 December 2016) - Added support for priorities
-v65 (Thursday, 8 December 2016) – Fixed reminders app hanging temporarily after creating a new reminder
-v64 (Wednesday, 7 December 2016) – Rewritten from the ground up in JavaScript for Automation. Now requires Alfred v3+, MacOS Sierra+.
-NEW: Enhanced date/time natural language parsing. Never worry about the correct syntax again!
-NEW: Better messaging about what will happen when actioning the item.
-FIXED: (Hopefully) improved performance.
-Note: there are still several features that have not been carried across to this version. As such, this should be considered a beta version.
-Monday, 24 October 2016 – Add support for Microsoft Word, Adobe Acrobat Pro, OneNote, Powerpoint (Thanks to catgsmith!)
-Friday, 3 June 2016 – Compatbility for users who did not previously have Alfred v2 installed
-Wednesday, 28 October 2015 - attempted fix for reminders not quitting on OS &lt;10.9
-Tuesday, 27 October 2015 - fix for reminders not closing after adding a new reminder
-Thursday, 15 October 2015 – fix for OS 10.11 El Capitan
-Wednesday, 21 January 2015 – added pattern “r in {x} days at {time} to {something}”
-Wednesday, 12 November 2014 – rtest will no longer test reminder caching on OS 10.9+
-Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”; the priority of the reminder can now be specified by “ !” at the end of the query, “ !1”,“ !2”,“ !3” each with increasing priorities
-Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10
-Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected
-Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)
-Thursday, 9 January 2014 – Fixed Finder links in OS 10.9
-Saturday, 23 November 2013 – Disable display of existing reminders under OS 10.9
-Friday, 22 November 2013 – Workflow will now display a message if the command is not valid
-Saturday, 2 November 2013 – Fixed an issue that would cause the workflow to crash the first few times it was run; fixed an issue that would prevent update checking to work correctly
-Friday, 1 November 2013 – Fixed an issue where caching reminders would cause update checking to fail
-Wednesday, 23 October 2013 – Increased timeout on OS 10.9, and allowed reminders to be retrieved from the cache while it's running; times specified without am/pm are now assumed to be in 24hour format; corrected an issue where 12 o'clock times were calculated incorrectly; you can now use "noon" and "midnight" to specify time
-Tuesday, 22 October 2013 – Prevent cache processes overlapping; recreate damaged cache file if needed; workaround for OS 10.9 GM2 plist bug
-Wednesday, 9 October 2013 – Added support for Google Chrome Canary; added plain text formats of applescripts; fix for cache process failing for new users
-Monday, 7 October 2013 – Added profiling to rtest, "r" with no arguments is now the same as "r all"
-Friday, 4 October 2013 – Compatibility with OS 10.9 Mavericks GM
-Wednesday, 18 September 2013 – Fix for non-gregorian date format
-Tuesday, 17 September 2013 – Updated q_workflow module to latest version
-Thursday, 18 April 2013 – Fixed recognition of 10/11/12am/pm times
-Tuesday, 16 April 2013 – Added support for WebKit nightly builds
-Monday, 15 April 2013 – Added "r in x days y hours", "r in x hours y minutes", "r today/tomorrow/weekday at time to x" patterns
+Changelog:  
+v76 (Wednesday 8 May 2024) – Updated chrono.js to 1.4.8. Removed autoupdater  
+v75 (21 October 2021) – New icons + Support for: Edge, Brave, and MS Excel   
+v74 (Thursday, 3 August 2017) – Fixed an issue where impartial queries did not get parsed (thanks Nibblesh!)  
+v73 (Friday, 21 July 2017) - Added support for Mailplane 3 (thanks devguydavid!), ensure dates are always in the future (thanks saeedmahani!), added external trigger  
+v72 (Monday, 6 March 2017) – Quit reminders if needed when complete  
+v71 (Saturday, 4 March 2017) – Added built-in help  
+v70 (Friday, 3 March 2017) – Added OneUpdater  
+v69 (Tuesday, 3 January 2017) – Added support for different lists  
+v68 (Friday, 9 December 2016) – Added remaining app handlers, escaped paths  
+v67 (Thursday, 8 December 2016) – Added support for app-secific reminders  
+v66 (Thursday, 8 December 2016) - Added support for priorities  
+v65 (Thursday, 8 December 2016) – Fixed reminders app hanging temporarily after creating a new reminder  
+v64 (Wednesday, 7 December 2016) – Rewritten from the ground up in JavaScript for Automation. Now requires Alfred v3+, MacOS Sierra+.  
+NEW: Enhanced date/time natural language parsing. Never worry about the correct syntax again!  
+NEW: Better messaging about what will happen when actioning the item.  
+FIXED: (Hopefully) improved performance.  
+Note: there are still several features that have not been carried across to this version. As such, this should be considered a beta version.  
+Monday, 24 October 2016 – Add support for Microsoft Word, Adobe Acrobat Pro, OneNote, Powerpoint (Thanks to catgsmith!)  
+Friday, 3 June 2016 – Compatbility for users who did not previously have Alfred v2 installed  
+Wednesday, 28 October 2015 - attempted fix for reminders not quitting on OS &lt;10.9  
+Tuesday, 27 October 2015 - fix for reminders not closing after adding a new reminder  
+Thursday, 15 October 2015 – fix for OS 10.11 El Capitan  
+Wednesday, 21 January 2015 – added pattern “r in {x} days at {time} to {something}”  
+Wednesday, 12 November 2014 – rtest will no longer test reminder caching on OS 10.9+  
+Thursday, 30 October 2014 – days can now be abbreviated to 3 or more characters (e.g. “tod”, “tomo”, “thurs”, etc.), minutes can be abbreviated to “min” or “mins”, hours can be abbreviated to “hr”; the priority of the reminder can now be specified by “ !” at the end of the query, “ !1”,“ !2”,“ !3” each with increasing priorities  
+Wednesday, 22 October 2014 – fixed cache process errors on OS 10.10, workaround for apple bug #18734006 on OS 10.10  
+Tuesday, 21 October 2014 – addressed some internal errors (which should also improve performance a little), notifications should now be working on OS 10.10, fixed Mail integration on OS 10.10, Mail integration now takes the most recent message if multiple messages (or a conversation) are selected  
+Saturday, 26 July 2014 – Disable showing reminders in OS 10.10 (Yosemite)  
+Thursday, 9 January 2014 – Fixed Finder links in OS 10.9  
+Saturday, 23 November 2013 – Disable display of existing reminders under OS 10.9  
+Friday, 22 November 2013 – Workflow will now display a message if the command is not valid  
+Saturday, 2 November 2013 – Fixed an issue that would cause the workflow to crash the first few times it was run; fixed an issue that would prevent update checking to work correctly  
+Friday, 1 November 2013 – Fixed an issue where caching reminders would cause update checking to fail  
+Wednesday, 23 October 2013 – Increased timeout on OS 10.9, and allowed reminders to be retrieved from the cache while it's running; times specified without am/pm are now assumed to be in 24hour format; corrected an issue where 12 o'clock times were calculated incorrectly; you can now use "noon" and "midnight" to specify time  
+Tuesday, 22 October 2013 – Prevent cache processes overlapping; recreate damaged cache file if needed; workaround for OS 10.9 GM2 plist bug  
+Wednesday, 9 October 2013 – Added support for Google Chrome Canary; added plain text formats of applescripts; fix for cache process failing for new users  
+Monday, 7 October 2013 – Added profiling to rtest, "r" with no arguments is now the same as "r all"  
+Friday, 4 October 2013 – Compatibility with OS 10.9 Mavericks GM  
+Wednesday, 18 September 2013 – Fix for non-gregorian date format  
+Tuesday, 17 September 2013 – Updated q_workflow module to latest version  
+Thursday, 18 April 2013 – Fixed recognition of 10/11/12am/pm times  
+Tuesday, 16 April 2013 – Added support for WebKit nightly builds  
+Monday, 15 April 2013 – Added "r in x days y hours", "r in x hours y minutes", "r today/tomorrow/weekday at time to x" patterns  
 Thursday, 11 April 2013 – Added support for OmniFocus, Vienna, reminder from address book now adds a link to the contact
-Wednesday, 10 April 2013 – Fix for -609 error (thanks, stevef!)
-Tuesday, 9 April 2013 – Added "r refresh" keyword to refresh list ("r all" will no longer refresh the list); added "rshow", which will only show options for existing reminders, "radd", which will only show options for adding new reminders; added "rtest" which runs a set of tests to check for potential problems; fixed an issue that would cause workflow to crash (thanks, erist!)
-Monday, 8 April 2013 – Better compatibility for editing library scripts on other systems; it's now possible to delete reminders by holding down control; fixed a rare issue where the workflow might incorrectly report a new version is available; iconography tweak; added "r overdue"; added support for TextMate and TextEdit; allow "r in 1 minute/hour/day"
-Sunday, 7 April 2013 – Don't mark reminder as complete with option held down; properly escape illegal characters in query; added support for Finder and Chromium
-Saturday, 6 April 2013 – Added "r this" which captures data from the current application and turns it into a reminder; support for Google Chrome, Safari, and Mail; fixed a regression; support for contacts/address book; added icons from the icon factory; "r all" now refreshes the cache
-Friday, 5 April 2013 – Show "r all" in help; don't close reminders if its been moved to the foreground; all keywords can now be used to filter displayed reminders; changed the cache duration to 2 hours; subtitle for existing reminders shows more information where possible
-Thursday, 4 April 2013 – Performance improvements; hold option to view the selected reminder in Reminders.app
-Wednesday, 3 April 2013 – Fix for "in list" pattern breaking up text; added "r help" examples; don't prompt to create reminder with "all" keyword; checks for newer versions of the workflow
-Tuesday, 2 April 2013 – If reminders.app is closed, it will stay closed when using this workflow
-Sunday, 31 March 2013 – Added pattern "r Wednesday something"
-Wednesday, 27 March 2013 – Renamed workflow to "Reminders"; Use application id instead of name, Alfred now shows existing reminders in his list (selecting one will mark it as complete); keyword is now optional
-Tuesday, 26 March 2013 – Now sets specified date as the reminder date, rather than due date; added pattern "r something in Y list"
-Wednesday, 20 March 2013 – You can now use the pattern "r at 1.30 to something"; Alfred will tell you what's going to happen before you press enter; split off code to library file
-Tuesday, 19 March 2013 – You can now use the pattern "r in X minutes/hours/days something"
-Sunday, 17 March 2013 – You can now specify a date for the reminder. See the examples above.
+Wednesday, 10 April 2013 – Fix for -609 error (thanks, stevef!)  
+Tuesday, 9 April 2013 – Added "r refresh" keyword to refresh list ("r all" will no longer refresh the list); added "rshow", which will only show options for existing reminders, "radd", which will only show options for adding new reminders; added "rtest" which runs a set of tests to check for potential problems; fixed an issue that would cause workflow to crash (thanks, erist!)  
+Monday, 8 April 2013 – Better compatibility for editing library scripts on other systems; it's now possible to delete reminders by holding down control; fixed a rare issue where the workflow might incorrectly report a new version is available; iconography tweak; added "r overdue"; added support for TextMate and TextEdit; allow "r in 1 minute/hour/day"  
+Sunday, 7 April 2013 – Don't mark reminder as complete with option held down; properly escape illegal characters in query; added support for Finder and Chromium  
+Saturday, 6 April 2013 – Added "r this" which captures data from the current application and turns it into a reminder; support for Google Chrome, Safari, and Mail; fixed a regression; support for contacts/address book; added icons from the icon factory; "r all" now refreshes the cache  
+Friday, 5 April 2013 – Show "r all" in help; don't close reminders if its been moved to the foreground; all keywords can now be used to filter displayed reminders; changed the cache duration to 2 hours; subtitle for existing reminders shows more information where possible  
+Thursday, 4 April 2013 – Performance improvements; hold option to view the selected reminder in Reminders.app  
+Wednesday, 3 April 2013 – Fix for "in list" pattern breaking up text; added "r help" examples; don't prompt to create reminder with "all" keyword; checks for newer versions of the workflow  
+Tuesday, 2 April 2013 – If reminders.app is closed, it will stay closed when using this workflow  
+Sunday, 31 March 2013 – Added pattern "r Wednesday something"  
+Wednesday, 27 March 2013 – Renamed workflow to "Reminders"; Use application id instead of name, Alfred now shows existing reminders in his list (selecting one will mark it as complete); keyword is now optional  
+Tuesday, 26 March 2013 – Now sets specified date as the reminder date, rather than due date; added pattern "r something in Y list"  
+Wednesday, 20 March 2013 – You can now use the pattern "r at 1.30 to something"; Alfred will tell you what's going to happen before you press enter; split off code to library file  
+Tuesday, 19 March 2013 – You can now use the pattern "r in X minutes/hours/days something"  
+Sunday, 17 March 2013 – You can now specify a date for the reminder. See the examples above.  
 
 Uses AppleScript implementation of the Workflow object class for Alfred 2 (https://github.com/qlassiqa/qWorkflow)
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
@@ -1709,18 +1636,6 @@ Understand why this doesn't get passed along</string>
 			<key>ypos</key>
 			<real>230</real>
 		</dict>
-		<key>DF47C07B-3990-4258-9ADD-9750C97514B2</key>
-		<dict>
-			<key>colorindex</key>
-			<integer>12</integer>
-			<key>note</key>
-			<string>OneUpdater
-Provides automatic updating</string>
-			<key>xpos</key>
-			<real>840</real>
-			<key>ypos</key>
-			<real>350</real>
-		</dict>
 		<key>E5B72F9E-C243-4876-B6BB-4C79008E62D0</key>
 		<dict>
 			<key>colorindex</key>
@@ -1750,10 +1665,8 @@ Reduce code duplication</string>
 		<key>reverse_priority</key>
 		<string>0</string>
 	</dict>
-	<key>variablesdontexport</key>
-	<array/>
 	<key>version</key>
-	<string>75</string>
+	<string>76</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
