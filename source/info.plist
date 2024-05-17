@@ -518,7 +518,14 @@ function parseReminderQuery(query) {
 		var d = results[i].start.date(); // Create a Date object
 		// If date is in the past, assume intended date is tomorrow
 		if (d &lt; now) {
-			d.setDate(now.getDate() + 1);
+			if (results[i].text.toLowerCase() == "today") {
+				d.setDate(now.getDate());
+				// delay to 1 hour
+				d.setHours(new Date().getHours() + 1);
+				d.setMinutes(new Date().getMinutes());
+			} else {
+				d.setDate(now.getDate() + 1);
+			}
 		}
 		var reminderText = resultText.trim();
 		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority, reminderList:reminderList}));
@@ -976,7 +983,14 @@ function parseReminderQuery(query) {
 		var d = results[i].start.date(); // Create a Date object
 		// If date is in the past, assume intended date is tomorrow
 		if (d &lt; now) {
-			d.setDate(now.getDate() + 1);
+			if (results[i].text.toLowerCase() == "today") {
+				d.setDate(now.getDate());
+				// delay to 1 hour
+				d.setHours(new Date().getHours() + 1);
+				d.setMinutes(new Date().getMinutes());
+			} else {
+				d.setDate(now.getDate() + 1);
+			}
 		}
 		var reminderText = resultText.trim();
 		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority, reminderList:reminderList}));
