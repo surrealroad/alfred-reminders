@@ -1478,7 +1478,8 @@ In Alfred create a new Blank Workflow, then right-click and choose Open In Finde
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
-Changelog:  
+Changelog: 
+v77 (Monday 20 May 2024) – Fix a reminder that was specified for today but was added to tomorrow (thanks narol!) 
 v76 (Wednesday 8 May 2024) – Updated chrono.js to 1.4.8. Removed autoupdater  
 v75 (21 October 2021) – New icons + Support for: Edge, Brave, and MS Excel   
 v74 (Thursday, 3 August 2017) – Fixed an issue where impartial queries did not get parsed (thanks Nibblesh!)  
@@ -1679,8 +1680,10 @@ Reduce code duplication</string>
 		<key>reverse_priority</key>
 		<string>0</string>
 	</dict>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
-	<string>76</string>
+	<string>77</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
