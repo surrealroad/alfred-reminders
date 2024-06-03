@@ -250,7 +250,11 @@ function getAction(options) {
   else if(options['application'] &amp;&amp; options['application']['text']) subtitle += " about \"" + options['application']['text'] + "\"";
 
   if(options['date']) {
-    subtitle += " on " + options['date'].toString();
+  	if(options['allDay']) { 
+			subtitle += " on " + options['date'].toDateString();
+		} else {
+		    subtitle += " on " + options['date'].toString();
+		}
   }
 
   if(options['whenText']) {
@@ -304,6 +308,7 @@ function getAction(options) {
 // reminderText: text of the reminder
 // reminderBody: body text for the reminder
 // date: remind me date
+// allDay: remind all day
 // list: reminder list name
 // priority: 1|2|3 reminder priority value
 // application: application name
@@ -314,6 +319,7 @@ function getReminderData(options) {
     priority = options['priority'],
     body = "",
     date = "",
+	allDay = false,
     application = "",
     list = "";
 
@@ -323,6 +329,10 @@ function getReminderData(options) {
 
   if(options['date']) {
     date = options['date'];
+  }
+  
+  if(options['allDay']) {
+    allDay = options['allDay'];
   }
 
   if(options['application']) {
@@ -335,7 +345,7 @@ function getReminderData(options) {
     list = options['reminderList'];
   }
 
-  var data = {arg:arg, text:text, body:body, date:date, list:list, priority:parseInt(priority), application:application}
+  var data = {arg:arg, text:text, body:body, date:date, allDay:allDay, list:list, priority:parseInt(priority), application:application}
   return data
 }
 
@@ -527,9 +537,10 @@ function parseReminderQuery(query) {
 				d.setDate(now.getDate() + 1);
 			}
 		}
+		var allDay = !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute');
 		var reminderText = resultText.trim();
-		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority, reminderList:reminderList}));
-		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, list:"", priority:priority, application:application, reminderList:reminderList}));
+		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, allDay:allDay, whenText:results[i].text, priority:priority, reminderList:reminderList}));
+		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, allDay:allDay, list:"", priority:priority, application:application, reminderList:reminderList}));
 	}
 
 	// always submit non-dated item
@@ -551,8 +562,8 @@ function showHelpItems() {
 	"in 5 minutes drop everything",
 	"in 2 hours laugh out loud in Reminders list",
 	"in 3 days 1 hour pick stuff up off the floor",
-	"24/12/13 to forget everything I know about things in movies",
-	"12 June 15 to come up with some interesting ideas",
+	"24/12/13 forget everything I know about things in movies",
+	"12 June 15 come up with some interesting ideas",
 	"31-12-99 23:22 panic about the millennium bug",
 	"at 2pm wait for nothing in particular",
 	"next thursday at 15.30 ask some difficult questions",
@@ -715,7 +726,11 @@ function getAction(options) {
   else if(options['application'] &amp;&amp; options['application']['text']) subtitle += " about \"" + options['application']['text'] + "\"";
 
   if(options['date']) {
-    subtitle += " on " + options['date'].toString();
+  	if(options['allDay']) { 
+			subtitle += " on " + options['date'].toDateString();
+		} else {
+		    subtitle += " on " + options['date'].toString();
+		}
   }
 
   if(options['whenText']) {
@@ -769,6 +784,7 @@ function getAction(options) {
 // reminderText: text of the reminder
 // reminderBody: body text for the reminder
 // date: remind me date
+// allDay: remind all day
 // list: reminder list name
 // priority: 1|2|3 reminder priority value
 // application: application name
@@ -779,6 +795,7 @@ function getReminderData(options) {
     priority = options['priority'],
     body = "",
     date = "",
+	allDay = false,
     application = "",
     list = "";
 
@@ -788,6 +805,10 @@ function getReminderData(options) {
 
   if(options['date']) {
     date = options['date'];
+  }
+  
+  if(options['allDay']) {
+    allDay = options['allDay'];
   }
 
   if(options['application']) {
@@ -800,7 +821,7 @@ function getReminderData(options) {
     list = options['reminderList'];
   }
 
-  var data = {arg:arg, text:text, body:body, date:date, list:list, priority:parseInt(priority), application:application}
+  var data = {arg:arg, text:text, body:body, date:date, allDay:allDay, list:list, priority:parseInt(priority), application:application}
   return data
 }
 
@@ -992,9 +1013,10 @@ function parseReminderQuery(query) {
 				d.setDate(now.getDate() + 1);
 			}
 		}
+		var allDay = !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute');
 		var reminderText = resultText.trim();
-		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, whenText:results[i].text, priority:priority, reminderList:reminderList}));
-		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, list:"", priority:priority, application:application, reminderList:reminderList}));
+		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, allDay:allDay, whenText:results[i].text, priority:priority, reminderList:reminderList}));
+		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, allDay:allDay, list:"", priority:priority, application:application, reminderList:reminderList}));
 	}
 
 	// always submit non-dated item
@@ -1016,8 +1038,8 @@ function showHelpItems() {
 	"in 5 minutes drop everything",
 	"in 2 hours laugh out loud in Reminders list",
 	"in 3 days 1 hour pick stuff up off the floor",
-	"24/12/13 to forget everything I know about things in movies",
-	"12 June 15 to come up with some interesting ideas",
+	"24/12/13 forget everything I know about things in movies",
+	"12 June 15 come up with some interesting ideas",
 	"31-12-99 23:22 panic about the millennium bug",
 	"at 2pm wait for nothing in particular",
 	"next thursday at 15.30 ask some difficult questions",
@@ -1127,6 +1149,10 @@ function createReminder(reminderData, defaultList) {
 		if(reminderData['date']) {
 			data['remindMeDate'] = new Date(reminderData['date'])
 			console.log("Date:" + data['date']);
+			if(reminderData['allDay']) {
+				data['alldayDueDate'] = data['remindMeDate'];
+				console.log("All Day Due Date:" + data['remindMeDate']);
+			}
 		}
 		if(reminderData['priority']) {
 			data['priority'] = parseInt(reminderData['priority']);
@@ -1478,8 +1504,9 @@ In Alfred create a new Blank Workflow, then right-click and choose Open In Finde
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
-Changelog: 
-v77 (Monday 20 May 2024) – Fix a reminder that was specified for today but was added to tomorrow (thanks narol!) 
+Changelog:  
+v78 (Monday 3 June 2024) – Reminders set without specifying a time will now be created without setting a time  
+v77 (Monday 20 May 2024) – Fix a reminder that was specified for today but was added to tomorrow (thanks narol!)  
 v76 (Wednesday 8 May 2024) – Updated chrono.js to 1.4.8. Removed autoupdater  
 v75 (21 October 2021) – New icons + Support for: Edge, Brave, and MS Excel   
 v74 (Thursday, 3 August 2017) – Fixed an issue where impartial queries did not get parsed (thanks Nibblesh!)  
@@ -1683,7 +1710,7 @@ Reduce code duplication</string>
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>77</string>
+	<string>78</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
