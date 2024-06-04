@@ -4,6 +4,8 @@
 <dict>
 	<key>bundleid</key>
 	<string>com.surrealroad.alfred-reminder</string>
+	<key>category</key>
+	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
 		<key>140C34D0-49CC-4CE2-BA3E-02B3B115F9D8</key>
@@ -519,9 +521,8 @@ function parseReminderQuery(query) {
     console.log(application['body']);
 
   }
-
-	results = window.chrono.parse(query);
 	var now = new Date();
+	results = window.chrono.parse(query, now);
 
 	for (var i = 0; i &lt; results.length; i++) {
 		resultText = query.replace(results[i].text,'');
@@ -537,7 +538,9 @@ function parseReminderQuery(query) {
 				d.setDate(now.getDate() + 1);
 			}
 		}
-		var allDay = !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute');
+	console.log(results[i].start.isCertain('year'),results[i].start.isCertain('month'),results[i].start.isCertain('day'),results[i].start.isCertain('hour'),results[i].start.isCertain('minute'),results[i].start.isCertain('second'));
+		// there appears to be something odd about how this parsing works, so this is a very hacky workaround
+		var allDay = results[i].start.isCertain('year') &amp;&amp; results[i].start.isCertain('month') &amp;&amp; results[i].start.isCertain('day') &amp;&amp; !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute') &amp;&amp; !results[i].start.isCertain('second');
 		var reminderText = resultText.trim();
 		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, allDay:allDay, whenText:results[i].text, priority:priority, reminderList:reminderList}));
 		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, allDay:allDay, list:"", priority:priority, application:application, reminderList:reminderList}));
@@ -995,9 +998,8 @@ function parseReminderQuery(query) {
     console.log(application['body']);
 
   }
-
-	results = window.chrono.parse(query);
 	var now = new Date();
+	results = window.chrono.parse(query, now);
 
 	for (var i = 0; i &lt; results.length; i++) {
 		resultText = query.replace(results[i].text,'');
@@ -1013,7 +1015,9 @@ function parseReminderQuery(query) {
 				d.setDate(now.getDate() + 1);
 			}
 		}
-		var allDay = !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute');
+	console.log(results[i].start.isCertain('year'),results[i].start.isCertain('month'),results[i].start.isCertain('day'),results[i].start.isCertain('hour'),results[i].start.isCertain('minute'),results[i].start.isCertain('second'));
+		// there appears to be something odd about how this parsing works, so this is a very hacky workaround
+		var allDay = results[i].start.isCertain('year') &amp;&amp; results[i].start.isCertain('month') &amp;&amp; results[i].start.isCertain('day') &amp;&amp; !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute') &amp;&amp; !results[i].start.isCertain('second');
 		var reminderText = resultText.trim();
 		items.push(getAction({arg:i, valid:true, reminderText:reminderText, date:d, allDay:allDay, whenText:results[i].text, priority:priority, reminderList:reminderList}));
 		reminders.push(getReminderData({arg:i, reminderText:reminderText, reminderBody:reminderBody, date:d, allDay:allDay, list:"", priority:priority, application:application, reminderList:reminderList}));
@@ -1505,6 +1509,7 @@ Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
 Changelog:  
+v79 (Tuesday 4 June 2024) – Fixed a regression where specific times would be missing  
 v78 (Monday 3 June 2024) – Reminders set without specifying a time will now be created without setting a time  
 v77 (Monday 20 May 2024) – Fix a reminder that was specified for today but was added to tomorrow (thanks narol!)  
 v76 (Wednesday 8 May 2024) – Updated chrono.js to 1.4.8. Removed autoupdater  
@@ -1710,7 +1715,7 @@ Reduce code duplication</string>
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>78</string>
+	<string>79</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
