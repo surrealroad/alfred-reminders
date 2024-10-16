@@ -231,6 +231,19 @@ function isRemindersRunning() {
 	return Application('Reminders').running();
 }
 
+function createChronoInstance() {
+    var chronoPath = $.getenv('alfred_preferences') + "/workflows/" + $.getenv('alfred_workflow_uid') + "/chrono.min.js";
+    
+    var fm = $.NSFileManager.defaultManager;
+    var contents = fm.contentsAtPath(chronoPath);
+    contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
+
+    var module = {exports: {}};
+    var exports = module.exports;
+    eval(ObjC.unwrap(contents));
+    return module.exports;
+}
+
 // returns a dictionary corresponding to an Alfred action item
 // https://www.alfredapp.com/help/workflows/inputs/script-filter/json/
 // arg: Alfred item arg
@@ -321,7 +334,7 @@ function getReminderData(options) {
     priority = options['priority'],
     body = "",
     date = "",
-	allDay = false,
+	allDay,
     application = "",
     list = "";
 
@@ -356,6 +369,9 @@ function parseReminderQuery(query) {
 	var parsedReminder = {}
 	var items = []
 	var reminders = []
+	
+	// Create a new chrono instance for each run
+    var chrono = createChronoInstance();
 
   // list supported applications along with the associated JXA to fetch information
   var supportedReminderApplications = [
@@ -379,30 +395,6 @@ function parseReminderQuery(query) {
     {appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
     {appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
   ]
-	if(! window.chrono) {
-		//https://github.com/dtinth/JXA-Cookbook/wiki/Importing-Scripts
-
-		//http://www.alfredforum.com/topic/9070-how-to-workflowenvironment-variables/
-		//https://www.alfredapp.com/help/workflows/script-environment-variables/
-		var chronoPath = $.getenv('alfred_preferences') + "/workflows/" + $.getenv('alfred_workflow_uid') + "/chrono.min.js"
-
-
-		// uncomment for local testing in script editor
-		//var path = app.pathTo(this);
-		//var workflowFolder =  $.NSString.alloc.initWithUTF8String(path).stringByDeletingLastPathComponent.js + '/';
-		//var chronoPath = workflowFolder + "chrono.min.js"
-
-		console.log(chronoPath)
-
-		var fm = $.NSFileManager.defaultManager;
-		var contents = fm.contentsAtPath(chronoPath); // NSData
-		contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
-
-		var module = {exports: {}};
-    	var exports = module.exports;
-		eval(ObjC.unwrap(contents));
-		window.chrono = module.exports;
-	}
 
 	// extract list
 	var reminderList = "";
@@ -521,8 +513,9 @@ function parseReminderQuery(query) {
     console.log(application['body']);
 
   }
-	var now = new Date();
-	results = window.chrono.parse(query, now);
+	const now = new Date();
+	results = chrono.parse(query, now);
+	// console.log(results);
 
 	for (var i = 0; i &lt; results.length; i++) {
 		resultText = query.replace(results[i].text,'');
@@ -538,7 +531,7 @@ function parseReminderQuery(query) {
 				d.setDate(now.getDate() + 1);
 			}
 		}
-	console.log(results[i].start.isCertain('year'),results[i].start.isCertain('month'),results[i].start.isCertain('day'),results[i].start.isCertain('hour'),results[i].start.isCertain('minute'),results[i].start.isCertain('second'));
+	// console.log(results[i].start.isCertain('year'),results[i].start.isCertain('month'),results[i].start.isCertain('day'),results[i].start.isCertain('hour'),results[i].start.isCertain('minute'),results[i].start.isCertain('second'));
 		// there appears to be something odd about how this parsing works, so this is a very hacky workaround
 		var allDay = results[i].start.isCertain('year') &amp;&amp; results[i].start.isCertain('month') &amp;&amp; results[i].start.isCertain('day') &amp;&amp; !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute') &amp;&amp; !results[i].start.isCertain('second');
 		var reminderText = resultText.trim();
@@ -547,7 +540,8 @@ function parseReminderQuery(query) {
 	}
 
 	// always submit non-dated item
-	items.push(getAction({arg:-1, valid:true, reminderText:query, priority:priority, application:application, reminderList:reminderList}));
+	const action = getAction({arg:-1, valid:true, reminderText:query, priority:priority, application:application, reminderList:reminderList});
+	items.push(action);
 	reminders.push(getReminderData({arg:-1, reminderText:query, reminderBody:"", date:"", list:"", priority:priority, application:application, reminderList:reminderList}));
 
 	parsedReminder['items'] = items;
@@ -582,7 +576,7 @@ function showHelpItems() {
 
   for (var i = 0; i &lt; helpItems.length; i++) {
   	var parsedReminder = parseReminderQuery(helpItems[i]);
-	console.log(helpItems[i]);
+	//console.log(helpItems[i]);
 	if(parsedReminder['items']) {
 		item = parsedReminder['items'][0];
 		item['title'] = "r " + helpItems[i];
@@ -708,6 +702,19 @@ function isRemindersRunning() {
 	return Application('Reminders').running();
 }
 
+function createChronoInstance() {
+    var chronoPath = $.getenv('alfred_preferences') + "/workflows/" + $.getenv('alfred_workflow_uid') + "/chrono.min.js";
+    
+    var fm = $.NSFileManager.defaultManager;
+    var contents = fm.contentsAtPath(chronoPath);
+    contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
+
+    var module = {exports: {}};
+    var exports = module.exports;
+    eval(ObjC.unwrap(contents));
+    return module.exports;
+}
+
 // returns a dictionary corresponding to an Alfred action item
 // https://www.alfredapp.com/help/workflows/inputs/script-filter/json/
 // arg: Alfred item arg
@@ -798,7 +805,7 @@ function getReminderData(options) {
     priority = options['priority'],
     body = "",
     date = "",
-	allDay = false,
+	allDay,
     application = "",
     list = "";
 
@@ -833,6 +840,9 @@ function parseReminderQuery(query) {
 	var parsedReminder = {}
 	var items = []
 	var reminders = []
+	
+	// Create a new chrono instance for each run
+    var chrono = createChronoInstance();
 
   // list supported applications along with the associated JXA to fetch information
   var supportedReminderApplications = [
@@ -856,30 +866,6 @@ function parseReminderQuery(query) {
     {appname:"Vienna", icon:"RSS.png", reminderText:'Application("Vienna").currentArticle().title()', reminderBody:'Application("Vienna").currentArticle().link()'},
     {appname:"WebKit", icon:"Safari.png", reminderText:'Application("WebKit").windows[0].currentTab.name();', reminderBody:'Application("WebKit").windows[0].currentTab.url();'},
   ]
-	if(! window.chrono) {
-		//https://github.com/dtinth/JXA-Cookbook/wiki/Importing-Scripts
-
-		//http://www.alfredforum.com/topic/9070-how-to-workflowenvironment-variables/
-		//https://www.alfredapp.com/help/workflows/script-environment-variables/
-		var chronoPath = $.getenv('alfred_preferences') + "/workflows/" + $.getenv('alfred_workflow_uid') + "/chrono.min.js"
-
-
-		// uncomment for local testing in script editor
-		//var path = app.pathTo(this);
-		//var workflowFolder =  $.NSString.alloc.initWithUTF8String(path).stringByDeletingLastPathComponent.js + '/';
-		//var chronoPath = workflowFolder + "chrono.min.js"
-
-		console.log(chronoPath)
-
-		var fm = $.NSFileManager.defaultManager;
-		var contents = fm.contentsAtPath(chronoPath); // NSData
-		contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
-
-		var module = {exports: {}};
-    	var exports = module.exports;
-		eval(ObjC.unwrap(contents));
-		window.chrono = module.exports;
-	}
 
 	// extract list
 	var reminderList = "";
@@ -998,8 +984,9 @@ function parseReminderQuery(query) {
     console.log(application['body']);
 
   }
-	var now = new Date();
-	results = window.chrono.parse(query, now);
+	const now = new Date();
+	results = chrono.parse(query, now);
+	// console.log(results);
 
 	for (var i = 0; i &lt; results.length; i++) {
 		resultText = query.replace(results[i].text,'');
@@ -1015,7 +1002,7 @@ function parseReminderQuery(query) {
 				d.setDate(now.getDate() + 1);
 			}
 		}
-	console.log(results[i].start.isCertain('year'),results[i].start.isCertain('month'),results[i].start.isCertain('day'),results[i].start.isCertain('hour'),results[i].start.isCertain('minute'),results[i].start.isCertain('second'));
+	// console.log(results[i].start.isCertain('year'),results[i].start.isCertain('month'),results[i].start.isCertain('day'),results[i].start.isCertain('hour'),results[i].start.isCertain('minute'),results[i].start.isCertain('second'));
 		// there appears to be something odd about how this parsing works, so this is a very hacky workaround
 		var allDay = results[i].start.isCertain('year') &amp;&amp; results[i].start.isCertain('month') &amp;&amp; results[i].start.isCertain('day') &amp;&amp; !results[i].start.isCertain('hour') &amp;&amp; !results[i].start.isCertain('minute') &amp;&amp; !results[i].start.isCertain('second');
 		var reminderText = resultText.trim();
@@ -1024,7 +1011,8 @@ function parseReminderQuery(query) {
 	}
 
 	// always submit non-dated item
-	items.push(getAction({arg:-1, valid:true, reminderText:query, priority:priority, application:application, reminderList:reminderList}));
+	const action = getAction({arg:-1, valid:true, reminderText:query, priority:priority, application:application, reminderList:reminderList});
+	items.push(action);
 	reminders.push(getReminderData({arg:-1, reminderText:query, reminderBody:"", date:"", list:"", priority:priority, application:application, reminderList:reminderList}));
 
 	parsedReminder['items'] = items;
@@ -1059,7 +1047,7 @@ function showHelpItems() {
 
   for (var i = 0; i &lt; helpItems.length; i++) {
   	var parsedReminder = parseReminderQuery(helpItems[i]);
-	console.log(helpItems[i]);
+	//console.log(helpItems[i]);
 	if(parsedReminder['items']) {
 		item = parsedReminder['items'][0];
 		item['title'] = "r " + helpItems[i];
@@ -1139,23 +1127,25 @@ function showHelpItems() {
 	});
 	//console.log(reminderData);
 
-	return createReminder(reminderData, $.getenv('defaultList'));
+	const newReminder =  createReminder(reminderData, $.getenv('defaultList'));
+	return newReminder;
 }
 
 function createReminder(reminderData, defaultList) {
-	var Reminders = Application('Reminders');
+	const Reminders = Application('Reminders');
 	try {
-		data = {name:reminderData['text']}
-		console.log("Name:" + data['name'])
+		let data = {name:reminderData['text']}
+		//console.log("Name:" + data['name'])
 		if(reminderData['body']) {
 			data['body'] = reminderData['body'];
 		}
 		if(reminderData['date']) {
-			data['remindMeDate'] = new Date(reminderData['date'])
-			console.log("Date:" + data['date']);
+			const remindMeDate = new Date(reminderData['date']);
+			data['remindMeDate'] = remindMeDate;
+			//console.log("Date:" + data['date']);
 			if(reminderData['allDay']) {
-				data['alldayDueDate'] = data['remindMeDate'];
-				console.log("All Day Due Date:" + data['remindMeDate']);
+				data['alldayDueDate'] = new Date(remindMeDate.getFullYear(), remindMeDate.getMonth(), remindMeDate.getDate());
+				//console.log("All Day Due Date:" + data['remindMeDate']);
 			}
 		}
 		if(reminderData['priority']) {
@@ -1171,7 +1161,7 @@ function createReminder(reminderData, defaultList) {
 			// default list provided by application
 			reminderList = Reminders.defaultList;
 		}
-		//console.log(reminder);
+		//console.log("Transmitting:", data['alldayDueDate']);
 		reminder = Reminders.Reminder(data);
 		reminderList.reminders.push(reminder);
 		// nb. querying the reminder object at this point causes reminders app to hang for ~15 sec
@@ -1712,10 +1702,8 @@ Reduce code duplication</string>
 		<key>reverse_priority</key>
 		<string>0</string>
 	</dict>
-	<key>variablesdontexport</key>
-	<array/>
 	<key>version</key>
-	<string>79</string>
+	<string>80</string>
 	<key>webaddress</key>
 	<string>http://www.surrealroad.com</string>
 </dict>
