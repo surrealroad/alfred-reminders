@@ -77,6 +77,24 @@ The following apps are currently supported:
 
 Apps can be added on request. Just [raise an issue](https://github.com/surrealroad/alfred-reminders/issues/new) with the app you use. As long as it's freely available and has AppleScript support, it can be added.
 
+### Multiple Reminders from Multi-line Text
+
+To create multiple reminders at once from multi-line text, use the `rmm` command. This is useful when you have selected text on your Mac (e.g., a to-do list) and want to convert each line into a separate reminder.
+
+Type `rmm` followed by multi-line text, with each line representing a separate reminder. Each line will be parsed using the same syntax as the `r` command, supporting dates, times, priorities, and lists.
+
+For example:
+```
+rmm tomorrow buy groceries
+finish report by Friday p2
+call mom at 3pm
+review pull requests !!! in work list
+```
+
+This will create 4 separate reminders with their respective dates, times, priorities, and lists.
+
+**Tip:** On macOS, you can select text anywhere, then use Alfred's default text action hotkey (usually Cmd+Opt+C) to bring up Alfred with the selected text already populated. Then just type `rmm` to convert the selected text into multiple reminders.
+
 ### Getting help
 
 `r help` will display the above examples

@@ -152,6 +152,42 @@
 				<false/>
 			</dict>
 		</array>
+		<key>AAA11111-1111-1111-1111-111111111111</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>BBB22222-2222-2222-2222-222222222222</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>BBB22222-2222-2222-2222-222222222222</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>E5B72F9E-C243-4876-B6BB-4C79008E62D0</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>9C5CBE5A-08CB-4CEB-BCAE-4C1004408F30</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Jack James</string>
@@ -1396,6 +1432,356 @@ Variables: {allvars}</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>keyword</key>
+				<string>rmm</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>2</integer>
+				<key>runningsubtext</key>
+				<string>Processing multi-line reminders…</string>
+				<key>script</key>
+				<string>ObjC.import('Foundation');
+ObjC.import('stdlib');
+var window = {} // required for chrono.js to function properly
+
+function run(argv) {
+	var query = argv[0],
+		jsonResult = {},
+		shouldQuit = !isRemindersRunning();
+
+	var result = parseMultilineReminders(query);
+
+	jsonResult['items'] = result['items'];
+	jsonResult['variables'] = {
+		"multiReminders": JSON.stringify(result['reminders']),
+		"quitAfter": JSON.stringify(shouldQuit)
+	};
+	return JSON.stringify(jsonResult);
+}
+
+function isRemindersRunning() {
+	return Application('Reminders').running();
+}
+
+function createChronoInstance() {
+    var chronoPath = $.getenv('alfred_preferences') + "/workflows/" + $.getenv('alfred_workflow_uid') + "/chrono.min.js";
+
+    var fm = $.NSFileManager.defaultManager;
+    var contents = fm.contentsAtPath(chronoPath);
+    contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
+
+    var module = {exports: {}};
+    var exports = module.exports;
+    eval(ObjC.unwrap(contents));
+    return module.exports;
+}
+
+function parseMultilineReminders(query) {
+	var lines = query.split('\n').filter(function(line) {
+		return line.trim().length &gt; 0;
+	});
+
+	var reminders = [];
+	var chrono = createChronoInstance();
+
+	for (var i = 0; i &lt; lines.length; i++) {
+		var line = lines[i].trim();
+		var parsedData = parseSingleReminderLine(line, chrono);
+		if (parsedData) {
+			reminders.push(parsedData);
+		}
+	}
+
+	var items = [];
+	if (reminders.length === 0) {
+		items.push({
+			title: "No valid reminders found",
+			subtitle: "Enter multi-line text with one reminder per line",
+			valid: false,
+			icon: {path: "icon.png"}
+		});
+	} else {
+		items.push({
+			title: "Create " + reminders.length + " reminder" + (reminders.length === 1 ? "" : "s"),
+			subtitle: "Press Enter to create all reminders",
+			arg: "create",
+			valid: true,
+			icon: {path: "icon.png"}
+		});
+
+		// Add preview items
+		for (var i = 0; i &lt; Math.min(reminders.length, 5); i++) {
+			var r = reminders[i];
+			var subtitle = "• " + r.text;
+			if (r.date) {
+				if (r.allDay) {
+					subtitle += " on " + new Date(r.date).toDateString();
+				} else {
+					subtitle += " on " + new Date(r.date).toString();
+				}
+			}
+			if (r.priority) {
+				var priorityText = ["", "low", "medium", "high"][r.priority] || "";
+				if (priorityText) subtitle += " (" + priorityText + " priority)";
+			}
+			if (r.list) {
+				subtitle += " in " + r.list + " list";
+			}
+			items.push({
+				title: subtitle,
+				subtitle: "",
+				valid: false,
+				icon: {path: "icon.png"}
+			});
+		}
+
+		if (reminders.length &gt; 5) {
+			items.push({
+				title: "... and " + (reminders.length - 5) + " more",
+				subtitle: "",
+				valid: false,
+				icon: {path: "icon.png"}
+			});
+		}
+	}
+
+	return {items: items, reminders: reminders};
+}
+
+function parseSingleReminderLine(line, chrono) {
+	var query = line;
+	var reminderList = "";
+	var priority = "";
+
+	// Extract list using same regex as parseReminderQuery
+	var listRegex = /(.+) in (.+) list($|\s+)/i;
+	var matches = listRegex.exec(query);
+	if (matches &amp;&amp; matches.length == 4) {
+		reminderList = matches[2];
+		query = matches[1];
+	}
+	if (reminderList == "") {
+		listRegex = /(.+) @ (.+?)($|\s+)/i;
+		matches = listRegex.exec(query);
+		if (matches &amp;&amp; matches.length == 4) {
+			reminderList = matches[2];
+			query = matches[1];
+		}
+	}
+
+	// Extract priority
+	var priorityRegex = /^(!{1,3})\s(.+)/i;
+	var matches = priorityRegex.exec(query);
+	if (matches &amp;&amp; matches.length == 3) {
+		priority = matches[1].length;
+		query = matches[2];
+	} else {
+		priorityRegex = /\s(.+)\s(!{1,3})$/i;
+		matches = priorityRegex.exec(query);
+		if (matches &amp;&amp; matches.length == 3) {
+			priority = matches[2].length;
+			query = matches[1];
+		} else {
+			priorityRegex = /(.+)\s(priority|p|!)\s*([1-3])\s*$/i;
+			matches = priorityRegex.exec(query);
+			if (matches &amp;&amp; matches.length == 4) {
+				priority = matches[3];
+				query = matches[1];
+			} else {
+				priorityRegex = /(.+)\s(priority\s+|p\s*|!\s*)(l|lo|low|m|med|medium|h|hi|high)\s*$/i;
+				matches = priorityRegex.exec(query);
+				if (matches &amp;&amp; matches.length == 4) {
+					var priorityText = matches[3];
+					if (priorityText[0] == "l") priority = 1;
+					else if (priorityText[0] == "m") priority = 2;
+					else if (priorityText[0] == "h") priority = 3;
+					query = matches[1];
+				} else {
+					priorityRegex = /(.+)\s(l|lo|low|m|med|medium|h|hi|high)(\s+priority|\s*p|\s*!)\s*$/i;
+					matches = priorityRegex.exec(query);
+					if (matches &amp;&amp; matches.length == 4) {
+						var priorityText = matches[2];
+						if (priorityText[0] == "l") priority = 1;
+						else if (priorityText[0] == "m") priority = 2;
+						else if (priorityText[0] == "h") priority = 3;
+						query = matches[1];
+					}
+				}
+			}
+		}
+	}
+
+	if (priority != "") {
+		if ($.getenv('reverse_priority') == 1) {
+			priority = [0, 9, 5, 1][priority];
+		} else {
+			priority = [0, 1, 5, 9][priority];
+		}
+	}
+
+	// Parse date/time
+	var date = null;
+	var allDay = false;
+	var reminderText = query;
+
+	const now = new Date();
+	var results = chrono.parse(query, now);
+
+	if (results.length &gt; 0) {
+		// Take the first result
+		var result = results[0];
+		reminderText = query.replace(result.text, '').trim();
+		var d = result.start.date();
+
+		// If date is in the past, assume tomorrow
+		if (d &lt; now) {
+			if (result.text.toLowerCase() == "today") {
+				d.setDate(now.getDate());
+				d.setHours(new Date().getHours() + 1);
+				d.setMinutes(new Date().getMinutes());
+			} else {
+				d.setDate(now.getDate() + 1);
+			}
+		}
+
+		allDay = result.start.isCertain('year') &amp;&amp; result.start.isCertain('month') &amp;&amp; result.start.isCertain('day') &amp;&amp; !result.start.isCertain('hour') &amp;&amp; !result.start.isCertain('minute') &amp;&amp; !result.start.isCertain('second');
+		date = d.toISOString();
+	}
+
+	return {
+		text: reminderText || query,
+		body: "",
+		date: date,
+		allDay: allDay,
+		list: reminderList,
+		priority: parseInt(priority) || 0
+	};
+}</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Create multiple reminders from multi-line text</string>
+				<key>title</key>
+				<string>Add Multiple Reminders</string>
+				<key>type</key>
+				<integer>7</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>AAA11111-1111-1111-1111-111111111111</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>function run(argv) {
+	ObjC.import('stdlib');
+	var reminders = JSON.parse($.getenv('multiReminders'));
+
+	var created = [];
+	var failed = [];
+
+	for (var i = 0; i &lt; reminders.length; i++) {
+		try {
+			var result = createReminder(reminders[i], $.getenv('defaultList'));
+			created.push(reminders[i].text);
+		} catch (e) {
+			failed.push(reminders[i].text + ": " + e);
+		}
+	}
+
+	var message = "Created " + created.length + " reminder" + (created.length === 1 ? "" : "s");
+	if (failed.length &gt; 0) {
+		message += ", " + failed.length + " failed";
+	}
+
+	return message;
+}
+
+function createReminder(reminderData, defaultList) {
+	const Reminders = Application('Reminders');
+	try {
+		let data = {name: reminderData['text']};
+
+		if (reminderData['body']) {
+			data['body'] = reminderData['body'];
+		}
+
+		if (reminderData['date']) {
+			const remindMeDate = new Date(reminderData['date']);
+			data['remindMeDate'] = remindMeDate;
+
+			if (reminderData['allDay']) {
+				data['alldayDueDate'] = new Date(remindMeDate.getFullYear(), remindMeDate.getMonth(), remindMeDate.getDate());
+			}
+		}
+
+		if (reminderData['priority']) {
+			data['priority'] = parseInt(reminderData['priority']);
+		}
+
+		var reminderList;
+		if (reminderData['list'] &amp;&amp; Reminders.lists.whose({name: reminderData['list']}).length) {
+			reminderList = Reminders.lists.whose({name: reminderData['list']})[0];
+		} else if (defaultList &amp;&amp; Reminders.lists.whose({name: defaultList}).length) {
+			reminderList = Reminders.lists.whose({name: defaultList})[0];
+		} else {
+			reminderList = Reminders.defaultList;
+		}
+
+		var reminder = Reminders.Reminder(data);
+		reminderList.reminders.push(reminder);
+
+		return "Created reminder: " + data['name'];
+	} catch (e) {
+		throw e;
+	}
+}</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>7</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>BBB22222-2222-2222-2222-222222222222</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>alfred-reminders
@@ -1693,6 +2079,28 @@ Reduce code duplication</string>
 			<real>220</real>
 			<key>ypos</key>
 			<real>80</real>
+		</dict>
+		<key>AAA11111-1111-1111-1111-111111111111</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>note</key>
+			<string>Multi-line reminders: parses each line as a separate reminder</string>
+			<key>xpos</key>
+			<real>220</real>
+			<key>ypos</key>
+			<real>420</real>
+		</dict>
+		<key>BBB22222-2222-2222-2222-222222222222</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>note</key>
+			<string>Creates all parsed reminders</string>
+			<key>xpos</key>
+			<real>530</real>
+			<key>ypos</key>
+			<real>420</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
