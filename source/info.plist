@@ -206,6 +206,8 @@ end alfred_script</string>
 				<string>ObjC.import('Foundation');
 ObjC.import('stdlib');
 var window = {} // required for chrono.js to function properly, see https://github.com/wanasit/chrono/issues/34
+var module = {exports: {}};
+var exports = module.exports;
 
 function run(argv) {
 	var query = argv[0],
@@ -238,8 +240,6 @@ function createChronoInstance() {
     var contents = fm.contentsAtPath(chronoPath);
     contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
 
-    var module = {exports: {}};
-    var exports = module.exports;
     eval(ObjC.unwrap(contents));
     return module.exports;
 }
@@ -677,6 +677,8 @@ function showHelpItems() {
 				<string>ObjC.import('Foundation');
 ObjC.import('stdlib');
 var window = {} // required for chrono.js to function properly, see https://github.com/wanasit/chrono/issues/34
+var module = {exports: {}};
+var exports = module.exports;
 
 function run(argv) {
 	var query = argv[0],
@@ -709,8 +711,6 @@ function createChronoInstance() {
     var contents = fm.contentsAtPath(chronoPath);
     contents = $.NSString.alloc.initWithDataEncoding(contents, $.NSUTF8StringEncoding);
 
-    var module = {exports: {}};
-    var exports = module.exports;
     eval(ObjC.unwrap(contents));
     return module.exports;
 }
