@@ -1498,7 +1498,8 @@ In Alfred create a new Blank Workflow, then right-click and choose Open In Finde
 Date parsing is done via [chrono.js](https://github.com/wanasit/chrono)
 Uses icons from the Flurry collection by David Lanham / The Icon Factory
 
-Changelog:  
+Changelog:
+v80 (Monday, 30 March 2026) – Compatibility fix for macOS Tahoe (thanks jasonk33!)
 v79 (Tuesday 4 June 2024) – Fixed a regression where specific times would be missing  
 v78 (Monday 3 June 2024) – Reminders set without specifying a time will now be created without setting a time  
 v77 (Monday 20 May 2024) – Fix a reminder that was specified for today but was added to tomorrow (thanks narol!)  
@@ -1702,6 +1703,8 @@ Reduce code duplication</string>
 		<key>reverse_priority</key>
 		<string>0</string>
 	</dict>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
 	<string>80</string>
 	<key>webaddress</key>
